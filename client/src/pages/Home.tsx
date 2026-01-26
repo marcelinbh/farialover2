@@ -22,6 +22,9 @@ export default function Home() {
     ...filters,
   });
 
+  // Perfis para Stories (primeiros 20)
+  const storyProfiles = profiles.slice(0, 20);
+
   const { data: featuredProfiles = [] } = trpc.profiles.list.useQuery({
     isFeatured: true,
   });
@@ -147,13 +150,13 @@ export default function Home() {
       {/* Story Viewer Modal */}
       {storyViewerOpen && (
         <StoryViewer
-          stories={profiles.slice(0, 20).map((profile) => ({
+          stories={storyProfiles.map((profile) => ({
             id: profile.id,
             profileId: profile.id,
             profileName: profile.name,
             profilePhoto: profile.photoUrl || '/placeholder-profile.jpg',
             profilePhone: profile.phone,
-            imageUrl: profile.photoUrl || '/placeholder-profile.jpg',
+            images: [profile.photoUrl || '/placeholder-profile.jpg'], // Foto principal, fotos adicionais serão carregadas no StoryViewer
           }))}
           initialIndex={storyInitialIndex}
           onClose={() => setStoryViewerOpen(false)}

@@ -165,3 +165,10 @@
 - [x] Criar componente StoryViewer completo (modal fullscreen, barra de progresso, navegação)
 - [x] Integrar StoryViewer no Home.tsx
 - [x] Testar Stories completo
+
+## Múltiplas Fotos por Perfil nos Stories
+- [x] Schema já tem tabela photos para fotos adicionais
+- [x] Criar query para buscar fotos adicionais por profileId (já existe profiles.getPhotos)
+- [x] Atualizar StoryViewer para exibir múltiplas fotos em sequência
+- [x] Popular banco com 3-5 fotos por perfil (4 fotos por perfil)
+- [x] Testar Stories com múltiplas fotos

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight, Phone, MessageCircle, User } from "lucide-react";
 import { Link } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 interface Story {
   id: number;
@@ -8,7 +9,7 @@ interface Story {
   profileName: string;
   profilePhoto: string;
   profilePhone: string;
-  imageUrl: string;
+  images: string[]; // array de URLs de imagens
 }
 
 interface StoryViewerProps {
@@ -18,11 +19,26 @@ interface StoryViewerProps {
 }
 
 export default function StoryViewer({ stories, initialIndex, onClose }: StoryViewerProps) {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(initialIndex);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const STORY_DURATION = 5000; // 5 segundos
+  const STORY_DURATION = 5000; // 5 segundos por imagem
 
-  const currentStory = stories[currentIndex];
+  const currentStory = stories[currentStoryIndex];
+  
+  // Buscar fotos adicionais do perfil atual
+  const { data: additionalPhotos = [] } = trpc.profiles.getPhotos.useQuery({ 
+    profileId: currentStory.profileId 
+  });
+  
+  // Combinar foto principal com fotos adicionais
+  const allImages = [
+    ...currentStory.images,
+    ...additionalPhotos.map(photo => photo.url)
+  ];
+  
+  const currentImage = allImages[currentImageIndex] || allImages[0];
+  const totalImages = allImages.length;
 
   // Progresso automático
   useEffect(() => {
@@ -30,12 +46,7 @@ export default function StoryViewer({ stories, initialIndex, onClose }: StoryVie
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          // Avançar para próximo story
-          if (currentIndex < stories.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-          } else {
-            onClose();
-          }
+          handleNext();
           return 0;
         }
         return prev + (100 / (STORY_DURATION / 100));
@@ -43,19 +54,34 @@ export default function StoryViewer({ stories, initialIndex, onClose }: StoryVie
     }, 100);
 
     return () => clearInterval(interval);
-  }, [currentIndex, stories.length, onClose]);
+  }, [currentStoryIndex, currentImageIndex]);
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+  const handleNext = () => {
+    // Se ainda tem imagens neste story, avança para próxima imagem
+    if (currentImageIndex < totalImages - 1) {
+      setCurrentImageIndex(currentImageIndex + 1);
+      setProgress(0);
+    } else if (currentStoryIndex < stories.length - 1) {
+      // Próximo story
+      setCurrentStoryIndex(currentStoryIndex + 1);
+      setCurrentImageIndex(0);
+      setProgress(0);
+    } else {
+      onClose();
     }
   };
 
-  const handleNext = () => {
-    if (currentIndex < stories.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      onClose();
+  const handlePrevious = () => {
+    // Se não é a primeira imagem, volta para imagem anterior
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+      setProgress(0);
+    } else if (currentStoryIndex > 0) {
+      // Story anterior
+      const previousStory = stories[currentStoryIndex - 1];
+      setCurrentStoryIndex(currentStoryIndex - 1);
+      setCurrentImageIndex(previousStory.images.length - 1); // Última imagem do story anterior
+      setProgress(0);
     }
   };
 
@@ -69,21 +95,21 @@ export default function StoryViewer({ stories, initialIndex, onClose }: StoryVie
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex]);
+  }, [currentStoryIndex, currentImageIndex]);
 
   return (
     <div className="story-viewer-overlay" onClick={onClose}>
       <div className="story-viewer-container" onClick={(e) => e.stopPropagation()}>
         {/* Header com barra de progresso */}
         <div className="story-header">
-          {/* Barras de progresso */}
+          {/* Barras de progresso - uma para cada imagem do story atual */}
           <div className="story-progress-bars">
-            {stories.map((_, index) => (
-              <div key={index} className="story-progress-bar-wrapper">
+            {allImages.map((_, index) => (
+              <div key={index} className="story-progress-bar">
                 <div
-                  className="story-progress-bar"
+                  className="story-progress-fill"
                   style={{
-                    width: index < currentIndex ? "100%" : index === currentIndex ? `${progress}%` : "0%",
+                    width: index < currentImageIndex ? "100%" : index === currentImageIndex ? `${progress}%` : "0%",
                   }}
                 />
               </div>
@@ -92,39 +118,31 @@ export default function StoryViewer({ stories, initialIndex, onClose }: StoryVie
 
           {/* Info do perfil */}
           <div className="story-profile-info">
-            <Link href={`/perfil/${currentStory.profileId}`} onClick={onClose}>
-              <img
-                src={currentStory.profilePhoto}
-                alt={currentStory.profileName}
-                className="story-profile-avatar"
-              />
-            </Link>
-            <Link href={`/perfil/${currentStory.profileId}`} onClick={onClose}>
-              <span className="story-profile-name">{currentStory.profileName}</span>
-            </Link>
-            <button onClick={onClose} className="story-close-btn">
-              <X size={24} />
-            </button>
+            <img src={currentStory.profilePhoto} alt={currentStory.profileName} />
+            <span>{currentStory.profileName}</span>
           </div>
+
+          {/* Botão fechar */}
+          <button className="story-close-btn" onClick={onClose}>
+            <X size={24} />
+          </button>
         </div>
 
         {/* Imagem do story */}
-        <div className="story-content">
-          <img
-            src={currentStory.imageUrl}
-            alt={currentStory.profileName}
-            className="story-image"
-          />
-        </div>
+        <img
+          src={currentImage}
+          alt={currentStory.profileName}
+          className="story-image"
+        />
 
-        {/* Navegação */}
-        {currentIndex > 0 && (
-          <button onClick={handlePrevious} className="story-nav-btn story-nav-prev">
+        {/* Botões de navegação */}
+        {currentStoryIndex > 0 && (
+          <button className="story-nav-btn story-nav-prev" onClick={handlePrevious}>
             <ChevronLeft size={32} />
           </button>
         )}
-        {currentIndex < stories.length - 1 && (
-          <button onClick={handleNext} className="story-nav-btn story-nav-next">
+        {currentStoryIndex < stories.length - 1 && (
+          <button className="story-nav-btn story-nav-next" onClick={handleNext}>
             <ChevronRight size={32} />
           </button>
         )}
