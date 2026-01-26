@@ -1,31 +1,221 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import Header from "@/components/Header";
+import ProfileCard from "@/components/ProfileCard";
+import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { Input } from "@/components/ui/input";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("");
+  
+  const { data: profiles = [], isLoading } = trpc.profiles.list.useQuery({
+    search: searchTerm || undefined,
+    city: selectedCity || undefined,
+    region: selectedRegion || undefined,
+  });
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const { data: featuredProfiles = [] } = trpc.profiles.list.useQuery({
+    isFeatured: true,
+  });
+
+  const { data: categories = [] } = trpc.categories.list.useQuery();
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    if (featuredProfiles.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % featuredProfiles.length);
+    }
+  };
+
+  const prevSlide = () => {
+    if (featuredProfiles.length > 0) {
+      setCurrentSlide((prev) => (prev - 1 + featuredProfiles.length) % featuredProfiles.length);
+    }
+  };
+
+  // Função para obter categorias de um perfil
+  const getProfileCategories = (profileId: number) => {
+    // TODO: Implementar query para buscar categorias do perfil
+    return [];
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      {/* Espaçamento para header fixo */}
+      <div className="h-20 md:h-24"></div>
+
+      {/* Banner/Slider Principal */}
+      {featuredProfiles.length > 0 && (
+        <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+          {featuredProfiles.map((profile, index) => (
+            <div
+              key={profile.id}
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={profile.photoUrl || '/placeholder-profile.jpg'}
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                <div className="container">
+                  <h2 className="text-4xl md:text-5xl font-bold mb-2">{profile.name}</h2>
+                  <p className="text-xl mb-1">{profile.age} anos</p>
+                  {profile.height && profile.weight && (
+                    <p className="text-lg mb-2">{profile.height} m, {profile.weight} kg</p>
+                  )}
+                  <p className="text-lg mb-4">{profile.city} - {profile.region}</p>
+                  <a
+                    href={`https://wa.me/${profile.phone.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block btn-gradient px-6 py-3 rounded-md"
+                  >
+                    {profile.phone}
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Navegação do Slider */}
+          {featuredProfiles.length > 1 && (
+            <>
+              <button
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+        </section>
+      )}
+
+      {/* Stories */}
+      <section className="py-8 bg-card/50">
+        <div className="container">
+          <h2 className="text-2xl font-bold mb-4 gradient-text">STORIES</h2>
+          <div className="stories-container">
+            {profiles.slice(0, 20).map((profile) => (
+              <a
+                key={profile.id}
+                href={`/profile/${profile.id}`}
+                className="story-item"
+              >
+                <img
+                  src={profile.photoUrl || '/placeholder-profile.jpg'}
+                  alt={profile.name}
+                />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Filtros e Busca */}
+      <section className="py-6 bg-card/30">
+        <div className="container">
+          <div className="flex flex-col md:flex-row gap-4">
+            <Input
+              type="text"
+              placeholder="Buscar por nome..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1"
+            />
+            <Input
+              type="text"
+              placeholder="Cidade..."
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="md:w-48"
+            />
+            <Input
+              type="text"
+              placeholder="Região/Bairro..."
+              value={selectedRegion}
+              onChange={(e) => setSelectedRegion(e.target.value)}
+              className="md:w-48"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Seção VIP */}
+      {profiles.filter(p => p.isVip).length > 0 && (
+        <section className="py-12">
+          <div className="container">
+            <h2 className="text-3xl font-bold mb-6 gradient-text">VIP'S</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {profiles.filter(p => p.isVip).map((profile) => (
+                <ProfileCard
+                  key={profile.id}
+                  profile={profile}
+                  categories={getProfileCategories(profile.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Listagem Principal de Perfis */}
+      <section className="py-12">
+        <div className="container">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold gradient-text">TODOS OS PERFIS</h2>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <MapPin size={20} />
+              <span>{profiles.length} perfis encontrados</span>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+              <p className="mt-4 text-muted-foreground">Carregando perfis...</p>
+            </div>
+          ) : profiles.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-xl text-muted-foreground">Nenhum perfil encontrado</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {profiles.map((profile) => (
+                <ProfileCard
+                  key={profile.id}
+                  profile={profile}
+                  categories={getProfileCategories(profile.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-card py-8 border-t border-border">
+        <div className="container text-center text-muted-foreground">
+          <p>&copy; 2026 farialover. Todos os direitos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 }
