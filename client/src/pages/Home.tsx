@@ -52,7 +52,7 @@ export default function Home() {
 
       {/* Banner/Slider Principal */}
       {featuredProfiles.length > 0 && (
-        <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+        <section className="relative h-[450px] md:h-[550px] overflow-hidden">
           {featuredProfiles.map((profile, index) => (
             <div
               key={profile.id}

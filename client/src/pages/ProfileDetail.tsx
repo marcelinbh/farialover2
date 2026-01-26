@@ -13,6 +13,7 @@ export default function ProfileDetail() {
   const profileId = params?.id ? parseInt(params.id) : 0;
 
   const { data: profile, isLoading } = trpc.profiles.getById.useQuery({ id: profileId });
+  const { data: photos = [] } = trpc.profiles.getPhotos.useQuery({ profileId });
   const { data: videos = [] } = trpc.videos.list.useQuery({ profileId });
   const { data: audios = [] } = trpc.audios.list.useQuery({ profileId });
   const { data: comments = [] } = trpc.comments.list.useQuery({ profileId });
@@ -90,6 +91,24 @@ export default function ProfileDetail() {
                 alt={profile.name}
                 className="w-full aspect-[3/4] object-cover"
               />
+              
+              {/* Galeria de Fotos */}
+              {photos.length > 0 && (
+                <div className="p-4 border-t border-border">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Galeria de Fotos</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {photos.map((photo) => (
+                      <img
+                        key={photo.id}
+                        src={photo.url}
+                        alt={`Foto ${photo.order}`}
+                        className="w-full aspect-square object-cover rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
+                        onClick={() => window.open(photo.url, '_blank')}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div className="p-6 space-y-4">
                 <h1 className="text-3xl font-bold gradient-text">{profile.name}</h1>

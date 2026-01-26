@@ -67,3 +67,11 @@
 - [x] Fazer upload das imagens para S3
 - [x] Atualizar perfis no banco de dados com URLs das imagens
 - [x] Verificar exibição das imagens no site
+
+## Ajustes de Layout e Galeria
+- [x] Ajustar tamanho do banner para corresponder ao agenda31.com.br
+- [x] Gerar 5 fotos adicionais para cada perfil (40 imagens total)
+- [x] Criar tabela de galeria no banco de dados
+- [x] Implementar sistema de galeria de fotos nos perfis
+- [x] Fazer upload de todas as fotos para S3
+- [x] Atualizar interface para exibir galeria de fotos
