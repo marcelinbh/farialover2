@@ -61,3 +61,9 @@
 - [x] Testes de funcionalidades principais
 - [x] Validação de uploads
 - [x] Testes de integração
+
+## Geração de Imagens e População do Site
+- [x] Gerar imagens de modelos usando IA (8 perfis)
+- [x] Fazer upload das imagens para S3
+- [x] Atualizar perfis no banco de dados com URLs das imagens
+- [x] Verificar exibição das imagens no site
