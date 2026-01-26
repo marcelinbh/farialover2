@@ -172,3 +172,8 @@
 - [x] Atualizar StoryViewer para exibir múltiplas fotos em sequência
 - [x] Popular banco com 3-5 fotos por perfil (4 fotos por perfil)
 - [x] Testar Stories com múltiplas fotos
+
+## Simplificar Menu do Header
+- [x] Remover itens: LAR, ATUALIZAÇÕES, SERVIÇOS, DEPOIMENTOS
+- [x] Trocar "ANUNCIE AQUI" por "CONTATO"
+- [x] Menu final: HOME, MODELOS, CIDADES, VÍDEOS, ÁUDIOS, CONTATO

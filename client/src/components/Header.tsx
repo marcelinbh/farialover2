@@ -28,17 +28,8 @@ export default function Header() {
             <Link href="/audios" className="text-foreground hover:text-primary transition-colors font-medium">
               ÁUDIOS
             </Link>
-            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
-              ATUALIZAÇÕES
-            </Link>
-            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
-              SERVIÇOS
-            </Link>
-            <Link href="/depoimentos" className="text-foreground hover:text-primary transition-colors font-medium">
-              DEPOIMENTOS
-            </Link>
-            <Link href="/" className="btn-gradient px-4 py-2 rounded-md text-sm">
-              ANUNCIE AQUI
+            <Link href="/contato" className="btn-gradient px-4 py-2 rounded-md text-sm">
+              CONTATO
             </Link>
           </nav>
 
