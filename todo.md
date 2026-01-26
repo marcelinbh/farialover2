@@ -120,3 +120,11 @@
 ## Correção de Erro HTML
 - [x] Identificar e corrigir elementos <a> aninhados
 - [x] Testar e validar correção
+
+## Replicação Exata do Banner do Agenda31
+- [x] Analisar estrutura do banner do agenda31.com.br
+- [x] Replicar posicionamento exato da foto da modelo
+- [x] Gerar 8 fotos horizontais (paisagem) para banners
+- [x] Fazer upload das fotos horizontais para S3
+- [x] Atualizar perfis com novas fotos de banner
+- [x] Testar e validar que a foto completa aparece
