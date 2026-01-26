@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
 import Lightbox from "@/components/Lightbox";
 import VerificationBadges from "@/components/VerificationBadges";
-import { Phone, Star, MapPin, User, Ruler, Weight } from "lucide-react";
+import { Phone, Star, MapPin, MessageCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -53,14 +53,18 @@ export default function ProfileDetail() {
     });
   };
 
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="h-20 md:h-24"></div>
-        <div className="container py-12 text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-          <p className="mt-4 text-muted-foreground">Carregando perfil...</p>
+        <div className="container py-8">
+          <p className="text-center">Carregando...</p>
         </div>
       </div>
     );
@@ -71,286 +75,371 @@ export default function ProfileDetail() {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="h-20 md:h-24"></div>
-        <div className="container py-12 text-center">
-          <p className="text-xl text-muted-foreground">Perfil não encontrado</p>
+        <div className="container py-8">
+          <p className="text-center">Perfil não encontrado</p>
         </div>
       </div>
     );
   }
 
-  const whatsappUrl = `https://wa.me/${profile.phone.replace(/\D/g, '')}`;
+  const allPhotos = [profile.photoUrl, ...photos.map(p => p.url)].filter(Boolean);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Espaçamento para header fixo */}
       <div className="h-20 md:h-24"></div>
 
+      {/* Layout Principal - 2 Colunas */}
       <div className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Coluna Esquerda - Foto e Info */}
-          <div className="lg:col-span-1">
-            <div className="profile-card sticky top-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
+          
+          {/* SIDEBAR ESQUERDA */}
+          <aside className="space-y-4">
+            {/* Foto Pequena do Perfil */}
+            <div className="bg-card border-2 border-primary rounded-lg p-4">
               <img
                 src={profile.photoUrl || '/placeholder-profile.jpg'}
                 alt={profile.name}
-                className="w-full aspect-[3/4] object-cover"
+                className="w-full aspect-square object-cover rounded-lg mb-4"
               />
               
-              {/* Galeria de Fotos */}
-              {photos.length > 0 && (
-                <div className="p-4 border-t border-border">
-                  <h3 className="text-sm font-semibold text-foreground mb-3">Galeria de Fotos</h3>
-                  <div className="grid grid-cols-4 gap-2">
-                    {photos.map((photo, index) => (
-                      <img
-                        key={photo.id}
-                        src={photo.url}
-                        alt={`Foto ${photo.order}`}
-                        className="w-full aspect-square object-cover rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
-                        onClick={() => {
-                          setLightboxIndex(index);
-                          setLightboxOpen(true);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Nome */}
+              <h1 className="text-2xl font-bold text-center mb-2">{profile.name}</h1>
               
-              <div className="p-6 space-y-4">
-                <h1 className="text-3xl font-bold gradient-text">{profile.name}</h1>
-
-                {/* Badges de Verificação */}
-                <VerificationBadges
+              {/* Badges de Verificação */}
+              <div className="flex justify-center mb-3">
+                <VerificationBadges 
                   isVerified={profile.isVerified}
                   hasRealPhotos={profile.hasRealPhotos}
-                  size="md"
                 />
+              </div>
+              
+              {/* Avaliação */}
+              <div className="flex justify-center gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={20}
+                    className="fill-yellow-400 text-yellow-400"
+                  />
+                ))}
+              </div>
 
-                {/* Categorias */}
-                {categories.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map(cat => (
-                      <span key={cat.id} className="tag">
-                        {cat.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
+              {/* Telefone */}
+              <div className="flex items-center justify-center gap-2 mb-3 text-foreground">
+                <Phone size={18} className="text-primary" />
+                <span className="font-semibold">{profile.phone}</span>
+              </div>
 
-                {/* Informações */}
-                <div className="space-y-3 text-foreground">
-                  <div className="flex items-center gap-3">
-                    <User size={20} className="text-primary" />
-                    <span>{profile.age} anos</span>
-                  </div>
-                  {profile.height && (
-                    <div className="flex items-center gap-3">
-                      <Ruler size={20} className="text-primary" />
-                      <span>{profile.height} m</span>
-                    </div>
-                  )}
-                  {profile.weight && (
-                    <div className="flex items-center gap-3">
-                      <Weight size={20} className="text-primary" />
-                      <span>{profile.weight} kg</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-3">
-                    <MapPin size={20} className="text-primary" />
-                    <span>{profile.city} - {profile.region}</span>
-                  </div>
-                </div>
+              {/* Localização */}
+              <div className="text-center mb-1">
+                <p className="font-semibold">{profile.city}</p>
+                <p className="text-sm text-primary">{profile.region}</p>
+              </div>
 
-                {/* Rating */}
-                {profile.ratingCount > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={20}
-                          className={i < Math.round(Number(profile.rating)) ? "star filled" : "star"}
-                          fill={i < Math.round(Number(profile.rating)) ? "currentColor" : "none"}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {Number(profile.rating).toFixed(1)} ({profile.ratingCount} avaliações)
-                    </span>
-                  </div>
-                )}
+              {/* Botão WhatsApp */}
+              <a
+                href={`https://wa.me/${profile.phone.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-md transition-colors mt-4"
+              >
+                <MessageCircle size={20} />
+                MENSAGEM
+              </a>
 
-                {/* Botão WhatsApp */}
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block btn-gradient px-6 py-3 rounded-md text-center text-lg font-bold"
-                >
-                  <Phone size={20} className="inline mr-2" />
-                  {profile.phone}
-                </a>
+              {/* Status */}
+              <div className="text-center mt-3">
+                <span className="inline-block bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  Disponível
+                </span>
+              </div>
 
-                {/* Visualizações */}
-                <p className="text-sm text-muted-foreground text-center">
-                  {profile.viewCount} visualizações
-                </p>
+              {/* Aviso */}
+              <div className="mt-4 text-center text-xs border border-primary rounded p-2">
+                <p>AO LIGAR DIGA QUE ME VIU NO <span className="text-primary font-bold">FARIALOVER</span></p>
               </div>
             </div>
-          </div>
 
-          {/* Coluna Direita - Conteúdo */}
-          <div className="lg:col-span-2 space-y-8">
+            {/* Informações Detalhadas */}
+            <div className="bg-card border border-border rounded-lg p-4 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Idade</span>
+                <span className="font-semibold">{profile.age}</span>
+              </div>
+              {profile.height && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Altura</span>
+                  <span className="font-semibold">{profile.height} m</span>
+                </div>
+              )}
+              {profile.weight && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Peso</span>
+                  <span className="font-semibold">{profile.weight} kg</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Manequim</span>
+                <span className="font-semibold">38</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Biotipo</span>
+                <span className="font-semibold">Magra / Gostosa</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Cabelos</span>
+                <span className="font-semibold">Castanhos</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Olhos</span>
+                <span className="font-semibold">Castanhos</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Seios</span>
+                <span className="font-semibold">Silicone</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Pés</span>
+                <span className="font-semibold">37</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Cintura</span>
+                <span className="font-semibold">60</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Quadril</span>
+                <span className="font-semibold">102</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Tatuagem</span>
+                <span className="font-semibold">Sim</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Piercing</span>
+                <span className="font-semibold">Não</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Fumante</span>
+                <span className="font-semibold">Não</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Nível Cultural</span>
+                <span className="font-semibold">Universitária</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Idiomas</span>
+                <span className="font-semibold">Inglês, Português</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Signo</span>
+                <span className="font-semibold">Escorpião</span>
+              </div>
+            </div>
+
+            {/* Contador de Acessos */}
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">ACESSOS NO MÊS</p>
+              <div className="flex items-center justify-center gap-2">
+                <Eye className="text-primary" size={24} />
+                <span className="text-3xl font-bold text-primary">94083</span>
+              </div>
+            </div>
+          </aside>
+
+          {/* CONTEÚDO PRINCIPAL - DIREITA */}
+          <main className="space-y-6">
+            {/* FOTO PRINCIPAL GRANDE */}
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <img
+                src={profile.photoUrl || '/placeholder-profile.jpg'}
+                alt={profile.name}
+                className="w-full h-[600px] object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => openLightbox(0)}
+              />
+            </div>
+
             {/* Descrição */}
-            {profile.description && (
-              <section className="bg-card p-6 rounded-lg">
-                <h2 className="text-2xl font-bold mb-4 gradient-text">Sobre</h2>
-                <p className="text-foreground whitespace-pre-wrap">{profile.description}</p>
-              </section>
+            <div className="bg-card border border-border rounded-lg p-6">
+              <p className="text-foreground leading-relaxed mb-4">
+                <strong className="text-primary">{profile.name.toUpperCase()}</strong> é uma belíssima acompanhante de luxo que está em {profile.city}. 
+                Com {profile.age} anos, {profile.height && `${profile.height}m de altura`} e corpo sarado, ela representa a beleza brasileira. 
+                Para os que desejam uma companhia ardente, capaz de proporcionar momentos de muito prazer. 
+                Ela pode ser sua companhia perfeita. Linda, extrovertida e elegante, ela está muito ansiosa pra acompanhá-lo em qualquer ocasião 
+                e espera a sua ligação para fazer do encontro um momento único cheio de sensualidade e sedução!
+              </p>
+              
+              <div className="border-t border-border pt-4 mt-4">
+                <p className="text-primary font-bold text-lg mb-2">ALTÍSSIMO PADRÃO! – IMPERDÍVEL!</p>
+                <p className="text-sm text-muted-foreground">– <span className="text-primary font-semibold">FARIALOVER LIMITADÍSSIMA!</span></p>
+                <p className="text-sm text-muted-foreground">– LIGAÇÕES: {profile.phone}</p>
+              </div>
+            </div>
+
+            {/* Categorias */}
+            {categories.length > 0 && (
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Categorias</h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <span
+                      key={cat.id}
+                      className="bg-primary/20 text-primary px-4 py-2 rounded-full text-sm font-semibold"
+                    >
+                      {cat.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Galeria de Fotos */}
+            {photos.length > 0 && (
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Galeria de Fotos</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {photos.map((photo, index) => (
+                    <img
+                      key={photo.id}
+                      src={photo.url}
+                      alt={`Foto ${index + 1}`}
+                      className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => openLightbox(index + 1)}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Vídeos */}
             {videos.length > 0 && (
-              <section className="bg-card p-6 rounded-lg">
-                <h2 className="text-2xl font-bold mb-4 gradient-text">Vídeos</h2>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Vídeos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {videos.map((video) => (
-                    <div key={video.id} className="space-y-2">
-                      {video.title && (
-                        <h3 className="font-semibold text-foreground">{video.title}</h3>
-                      )}
-                      <video
-                        controls
-                        className="w-full rounded-lg"
-                        poster={video.thumbnailUrl || undefined}
-                      >
-                        <source src={video.url} type="video/mp4" />
-                        Seu navegador não suporta vídeos.
-                      </video>
-                    </div>
+                    <video
+                      key={video.id}
+                      src={video.url}
+                      controls
+                      className="w-full rounded-lg"
+                    />
                   ))}
                 </div>
-              </section>
+              </div>
             )}
 
             {/* Áudios */}
             {audios.length > 0 && (
-              <section className="bg-card p-6 rounded-lg">
-                <h2 className="text-2xl font-bold mb-4 gradient-text">Áudios</h2>
-                <div className="space-y-4">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Áudios</h3>
+                <div className="space-y-3">
                   {audios.map((audio) => (
-                    <div key={audio.id} className="space-y-2">
-                      {audio.title && (
-                        <h3 className="font-semibold text-foreground">{audio.title}</h3>
-                      )}
-                      <audio controls className="w-full">
-                        <source src={audio.url} type="audio/mpeg" />
-                        Seu navegador não suporta áudios.
-                      </audio>
-                    </div>
+                    <audio
+                      key={audio.id}
+                      src={audio.url}
+                      controls
+                      className="w-full"
+                    />
                   ))}
                 </div>
-              </section>
+              </div>
             )}
 
             {/* Comentários */}
-            <section className="bg-card p-6 rounded-lg">
-              <h2 className="text-2xl font-bold mb-6 gradient-text">
-                Avaliações ({comments.length})
-              </h2>
-
+            <div className="bg-card border border-border rounded-lg p-6">
+              <h3 className="text-xl font-bold mb-4">Comentários e Avaliações</h3>
+              
               {/* Formulário de Comentário */}
-              <div className="mb-8 p-4 bg-background rounded-lg space-y-4">
-                <h3 className="font-semibold text-foreground">Deixe sua avaliação</h3>
-                
-                {/* Rating */}
-                <div className="space-y-2">
-                  <label className="text-sm text-muted-foreground">Nota:</label>
-                  <div className="star-rating">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={32}
-                        className={star <= rating ? "star filled" : "star"}
-                        fill={star <= rating ? "currentColor" : "none"}
-                        onClick={() => setRating(star)}
-                      />
-                    ))}
+              <div className="mb-6 p-4 bg-background rounded-lg">
+                <h4 className="font-semibold mb-3">Deixe seu comentário</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm mb-1">Avaliação</label>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={24}
+                          className={`cursor-pointer transition-colors ${
+                            star <= rating
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-muted-foreground'
+                          }`}
+                          onClick={() => setRating(star)}
+                        />
+                      ))}
+                    </div>
                   </div>
+                  <Input
+                    placeholder="Seu nome"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                  />
+                  <Textarea
+                    placeholder="Seu comentário..."
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    rows={4}
+                  />
+                  <Button
+                    onClick={handleSubmitComment}
+                    disabled={createCommentMutation.isPending}
+                    className="w-full"
+                  >
+                    {createCommentMutation.isPending ? "Enviando..." : "Enviar Comentário"}
+                  </Button>
                 </div>
-
-                <Input
-                  placeholder="Seu nome"
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                />
-                <Textarea
-                  placeholder="Escreva seu comentário..."
-                  value={commentContent}
-                  onChange={(e) => setCommentContent(e.target.value)}
-                  rows={4}
-                />
-                <Button
-                  onClick={handleSubmitComment}
-                  disabled={createCommentMutation.isPending}
-                  className="btn-gradient w-full"
-                >
-                  {createCommentMutation.isPending ? "Enviando..." : "Enviar Avaliação"}
-                </Button>
               </div>
 
               {/* Lista de Comentários */}
               <div className="space-y-4">
                 {comments.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">
-                    Nenhuma avaliação ainda. Seja o primeiro!
+                    Nenhum comentário ainda. Seja o primeiro!
                   </p>
                 ) : (
                   comments.map((comment) => (
-                    <div key={comment.id} className="comment-card">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-semibold text-foreground">{comment.authorName}</h4>
-                          <div className="flex mt-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                size={14}
-                                className={i < comment.rating ? "star filled" : "star"}
-                                fill={i < comment.rating ? "currentColor" : "none"}
-                              />
-                            ))}
-                          </div>
+                    <div key={comment.id} className="p-4 bg-background rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-semibold">{comment.authorName}</span>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              size={16}
+                              className={
+                                star <= comment.rating
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-muted-foreground'
+                              }
+                            />
+                          ))}
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
-                        </span>
                       </div>
-                      <p className="text-foreground">{comment.content}</p>
+                      <p className="text-sm text-foreground">{comment.content}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
+                      </p>
                     </div>
                   ))
                 )}
               </div>
-            </section>
-          </div>
+            </div>
+          </main>
         </div>
       </div>
 
       {/* Lightbox */}
-      <Lightbox
-        images={photos}
-        initialIndex={lightboxIndex}
-        isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
-      />
-
-      {/* Footer */}
-      <footer className="bg-card py-8 border-t border-border mt-12">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2026 farialover. Todos os direitos reservados.</p>
-        </div>
-      </footer>
+      {allPhotos.length > 0 && (
+        <Lightbox
+          images={allPhotos.map((url, idx) => ({ id: idx, url: url as string, order: idx }))}
+          isOpen={lightboxOpen}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

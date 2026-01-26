@@ -133,3 +133,12 @@
 - [x] Investigar por que o banner não está exibindo a imagem
 - [x] Corrigir erro de elementos <a> aninhados
 - [x] Testar e validar que o banner exibe a foto corretamente
+
+## Ajuste da Página de Detalhes do Perfil
+- [x] Analisar layout da página de detalhes do agenda31.com.br
+- [x] Criar sidebar esquerda completa (foto pequena, estrelas, telefone, WhatsApp, status, informações detalhadas)
+- [x] Adicionar foto principal GRANDE à direita (70% da largura)
+- [x] Adicionar contador de acessos
+- [x] Adicionar seção de descrição completa
+- [x] Adicionar galeria de fotos abaixo
+- [x] Testar e validar layout completo
