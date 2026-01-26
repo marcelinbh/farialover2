@@ -116,3 +116,7 @@
 ## Correção do Banner
 - [x] Ajustar posicionamento da imagem no banner para mostrar o rosto completo da modelo
 - [x] Testar em diferentes resoluções
+
+## Correção de Erro HTML
+- [x] Identificar e corrigir elementos <a> aninhados
+- [x] Testar e validar correção

@@ -23,19 +23,17 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
 
   return (
     <div className="profile-card">
-      <Link href={`/profile/${profile.id}`}>
-        <a className="block relative aspect-[3/4] overflow-hidden">
-          <img
-            src={profile.photoUrl || '/placeholder-profile.jpg'}
-            alt={profile.name}
-            className="w-full h-full object-cover"
-          />
-          {profile.isVip && (
-            <div className="absolute top-2 right-2 tag">
-              VIP
-            </div>
-          )}
-        </a>
+      <Link href={`/profile/${profile.id}`} className="block relative aspect-[3/4] overflow-hidden">
+        <img
+          src={profile.photoUrl || '/placeholder-profile.jpg'}
+          alt={profile.name}
+          className="w-full h-full object-cover"
+        />
+        {profile.isVip && (
+          <div className="absolute top-2 right-2 tag">
+            VIP
+          </div>
+        )}
       </Link>
       
       <div className="p-4 space-y-3">
@@ -62,12 +60,10 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
         )}
 
         {/* Nome e Idade */}
-        <Link href={`/profile/${profile.id}`}>
-          <a className="block">
-            <h3 className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-              {profile.name}
-            </h3>
-          </a>
+        <Link href={`/profile/${profile.id}`} className="block">
+          <h3 className="text-xl font-bold text-foreground hover:text-primary transition-colors">
+            {profile.name}
+          </h3>
         </Link>
         
         <div className="text-sm text-muted-foreground space-y-1">
