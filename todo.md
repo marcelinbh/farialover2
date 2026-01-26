@@ -112,3 +112,7 @@
 - [x] Criar interface de controle de destaques (VIP, Featured, Stories)
 - [x] Adicionar sistema de logs de ações administrativas
 - [x] Testar todas as funcionalidades do painel admin
+
+## Correção do Banner
+- [x] Ajustar posicionamento da imagem no banner para mostrar o rosto completo da modelo
+- [x] Testar em diferentes resoluções
