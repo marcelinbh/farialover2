@@ -142,3 +142,10 @@
 - [x] Adicionar seção de descrição completa
 - [x] Adicionar galeria de fotos abaixo
 - [x] Testar e validar layout completo
+
+## Mudanças Solicitadas
+- [x] Tornar banner clicável (redirecionar para perfil da modelo)
+- [x] Corrigir funcionalidade dos Stories
+- [x] Gerar nova logo profissional sem fundo branco (cores farialover)
+- [x] Replicar perfil EXATAMENTE como agenda31 com cores farialover
+- [x] Testar todas as mudanças

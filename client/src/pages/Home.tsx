@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
 import ProfileCard from "@/components/ProfileCard";
@@ -59,9 +60,10 @@ export default function Home() {
       {featuredProfiles.length > 0 && (
         <section className="relative h-[450px] md:h-[550px] overflow-hidden">
           {featuredProfiles.map((profile, index) => (
-            <div
+            <Link
               key={profile.id}
-              className={`absolute inset-0 transition-opacity duration-500 ${
+              href={`/perfil/${profile.id}`}
+              className={`absolute inset-0 transition-opacity duration-500 cursor-pointer ${
                 index === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -80,17 +82,19 @@ export default function Home() {
                     <p className="text-lg mb-2">{profile.height} m, {profile.weight} kg</p>
                   )}
                   <p className="text-lg mb-4">{profile.city} - {profile.region}</p>
-                  <a
-                    href={`https://wa.me/${profile.phone.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block btn-gradient px-6 py-3 rounded-md"
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(`https://wa.me/${profile.phone.replace(/\D/g, '')}`, '_blank');
+                    }}
+                    className="inline-block btn-gradient px-6 py-3 rounded-md hover:scale-105 transition-transform"
                   >
                     {profile.phone}
-                  </a>
+                  </button>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
 
           {/* Navegação do Slider */}
@@ -119,16 +123,16 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-4 gradient-text">STORIES</h2>
           <div className="stories-container">
             {profiles.slice(0, 20).map((profile) => (
-              <a
+              <Link
                 key={profile.id}
-                href={`/profile/${profile.id}`}
+                href={`/perfil/${profile.id}`}
                 className="story-item"
               >
                 <img
                   src={profile.photoUrl || '/placeholder-profile.jpg'}
                   alt={profile.name}
                 />
-              </a>
+              </Link>
             ))}
           </div>
         </div>

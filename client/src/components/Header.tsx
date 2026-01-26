@@ -8,7 +8,7 @@ export default function Header() {
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="farialover" className="h-12 md:h-16" />
+            <img src="/farialover-logo-new.png" alt="farialover" className="h-12 md:h-16" />
           </Link>
 
           {/* Navegação Desktop */}
