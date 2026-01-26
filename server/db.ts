@@ -9,7 +9,9 @@ import {
   videos, InsertVideo, Video,
   audios, InsertAudio, Audio,
   comments, InsertComment, Comment,
-  testimonials, InsertTestimonial, Testimonial
+  testimonials, InsertTestimonial, Testimonial,
+  payments, InsertPayment, Payment,
+  adminLogs, InsertAdminLog, AdminLog
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -436,4 +438,177 @@ export async function deleteTestimonial(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return await db.delete(testimonials).where(eq(testimonials.id, id));
+}
+
+// ===== PAYMENTS =====
+export async function createPayment(data: InsertPayment) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.insert(payments).values(data);
+}
+
+export async function getAllPayments(filters?: {
+  profileId?: number;
+  status?: "pending" | "confirmed" | "cancelled";
+  paymentType?: "vip" | "featured" | "verification" | "monthly";
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db.select().from(payments);
+  const conditions = [];
+  
+  if (filters?.profileId !== undefined) conditions.push(eq(payments.profileId, filters.profileId));
+  if (filters?.status !== undefined) conditions.push(eq(payments.status, filters.status));
+  if (filters?.paymentType !== undefined) conditions.push(eq(payments.paymentType, filters.paymentType));
+  
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)!) as any;
+  }
+  
+  return await query.orderBy(desc(payments.createdAt));
+}
+
+export async function getPaymentById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(payments).where(eq(payments.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updatePayment(id: number, data: Partial<InsertPayment>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.update(payments).set(data).where(eq(payments.id, id));
+}
+
+export async function confirmPayment(id: number, adminId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.update(payments).set({
+    status: "confirmed",
+    paidAt: new Date(),
+    confirmedBy: adminId,
+  }).where(eq(payments.id, id));
+}
+
+export async function deletePayment(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.delete(payments).where(eq(payments.id, id));
+}
+
+// ===== ADMIN LOGS =====
+export async function createAdminLog(data: InsertAdminLog) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.insert(adminLogs).values(data);
+}
+
+export async function getAdminLogs(filters?: {
+  adminId?: number;
+  action?: string;
+  targetType?: string;
+  limit?: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db.select().from(adminLogs);
+  const conditions = [];
+  
+  if (filters?.adminId !== undefined) conditions.push(eq(adminLogs.adminId, filters.adminId));
+  if (filters?.action !== undefined) conditions.push(eq(adminLogs.action, filters.action));
+  if (filters?.targetType !== undefined) conditions.push(eq(adminLogs.targetType, filters.targetType));
+  
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)!) as any;
+  }
+  
+  const result = await query.orderBy(desc(adminLogs.createdAt));
+  
+  if (filters?.limit) {
+    return result.slice(0, filters.limit);
+  }
+  
+  return result;
+}
+
+// ===== ADMIN PROFILE MANAGEMENT =====
+export async function approveProfile(profileId: number, adminId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(profiles).set({
+    isApproved: true,
+    approvalStatus: "approved",
+    isActive: true,
+    rejectionReason: null,
+  }).where(eq(profiles.id, profileId));
+  
+  await createAdminLog({
+    adminId,
+    action: "approve_profile",
+    targetType: "profile",
+    targetId: profileId,
+    details: JSON.stringify({ profileId }),
+  });
+  
+  return { success: true };
+}
+
+export async function rejectProfile(profileId: number, adminId: number, reason: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(profiles).set({
+    isApproved: false,
+    approvalStatus: "rejected",
+    isActive: false,
+    rejectionReason: reason,
+  }).where(eq(profiles.id, profileId));
+  
+  await createAdminLog({
+    adminId,
+    action: "reject_profile",
+    targetType: "profile",
+    targetId: profileId,
+    details: JSON.stringify({ profileId, reason }),
+  });
+  
+  return { success: true };
+}
+
+export async function toggleProfileActive(profileId: number, adminId: number, isActive: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(profiles).set({ isActive }).where(eq(profiles.id, profileId));
+  
+  await createAdminLog({
+    adminId,
+    action: isActive ? "activate_profile" : "deactivate_profile",
+    targetType: "profile",
+    targetId: profileId,
+    details: JSON.stringify({ profileId, isActive }),
+  });
+  
+  return { success: true };
+}
+
+export async function toggleProfileFeature(profileId: number, adminId: number, feature: "isFeatured" | "isVip" | "isVerified" | "hasRealPhotos", value: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(profiles).set({ [feature]: value }).where(eq(profiles.id, profileId));
+  
+  await createAdminLog({
+    adminId,
+    action: `toggle_${feature}`,
+    targetType: "profile",
+    targetId: profileId,
+    details: JSON.stringify({ profileId, feature, value }),
+  });
+  
+  return { success: true };
 }

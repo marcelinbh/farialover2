@@ -28,7 +28,10 @@ export const profiles = mysqlTable("profiles", {
   description: text("description"),
   photoUrl: text("photoUrl"), // URL da foto principal
   photoKey: text("photoKey"), // chave S3 da foto principal
-  isActive: boolean("isActive").default(true).notNull(),
+  isActive: boolean("isActive").default(false).notNull(), // perfil ativo/visível no site
+  isApproved: boolean("isApproved").default(false).notNull(), // aprovado pelo admin
+  approvalStatus: mysqlEnum("approvalStatus", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  rejectionReason: text("rejectionReason"), // motivo da rejeição
   isFeatured: boolean("isFeatured").default(false).notNull(), // destaque no banner
   isVip: boolean("isVip").default(false).notNull(),
   isVerified: boolean("isVerified").default(false).notNull(), // perfil verificado
@@ -144,3 +147,38 @@ export const testimonials = mysqlTable("testimonials", {
 
 export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertTestimonial = typeof testimonials.$inferInsert;
+
+// Tabela de pagamentos PIX (controle manual)
+export const payments = mysqlTable("payments", {
+  id: int("id").autoincrement().primaryKey(),
+  profileId: int("profileId").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // valor em reais
+  paymentType: mysqlEnum("paymentType", ["vip", "featured", "verification", "monthly"]).notNull(),
+  paymentMethod: varchar("paymentMethod", { length: 50 }).default("pix").notNull(),
+  pixKey: text("pixKey"), // chave PIX usada
+  transactionId: varchar("transactionId", { length: 255 }), // ID da transação PIX
+  status: mysqlEnum("status", ["pending", "confirmed", "cancelled"]).default("pending").notNull(),
+  paidAt: timestamp("paidAt"), // data do pagamento
+  confirmedBy: int("confirmedBy"), // ID do admin que confirmou
+  notes: text("notes"), // observações do admin
+  expiresAt: timestamp("expiresAt"), // data de expiração do serviço
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = typeof payments.$inferInsert;
+
+// Tabela de logs administrativos
+export const adminLogs = mysqlTable("adminLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  adminId: int("adminId").notNull(), // ID do admin que executou a ação
+  action: varchar("action", { length: 100 }).notNull(), // tipo de ação
+  targetType: varchar("targetType", { length: 50 }).notNull(), // profile, payment, comment, etc
+  targetId: int("targetId"), // ID do item afetado
+  details: text("details"), // detalhes da ação em JSON
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type InsertAdminLog = typeof adminLogs.$inferInsert;

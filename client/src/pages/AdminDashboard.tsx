@@ -5,37 +5,135 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
-import { Users, Video, Music, MessageSquare, Tags, Plus } from "lucide-react";
+import { 
+  Users, DollarSign, MessageSquare, Activity, 
+  CheckCircle, XCircle, Eye, EyeOff, Star, Crown,
+  Shield, Image, Clock, TrendingUp
+} from "lucide-react";
 
 export default function AdminDashboard() {
   const { user, loading, isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profiles' | 'videos' | 'audios' | 'comments' | 'categories'>('profiles');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'profiles' | 'payments' | 'comments' | 'logs'>('dashboard');
 
-  const { data: profiles = [] } = trpc.profiles.list.useQuery({}, { enabled: isAuthenticated && user?.role === 'admin' });
-  const { data: allComments = [] } = trpc.comments.listAll.useQuery({ approvedOnly: false }, { enabled: isAuthenticated && user?.role === 'admin' });
-  const { data: categories = [] } = trpc.categories.list.useQuery();
+  const utils = trpc.useUtils();
 
+  // Queries
+  const { data: stats } = trpc.admin.getStats.useQuery(undefined, { 
+    enabled: isAuthenticated && user?.role === 'admin' 
+  });
+  
+  const { data: profiles = [] } = trpc.profiles.list.useQuery({}, { 
+    enabled: isAuthenticated && user?.role === 'admin' 
+  });
+  
+  const { data: payments = [] } = trpc.admin.getPayments.useQuery(undefined, { 
+    enabled: isAuthenticated && user?.role === 'admin' 
+  });
+  
+  const { data: allComments = [] } = trpc.comments.listAll.useQuery({ approvedOnly: false }, { 
+    enabled: isAuthenticated && user?.role === 'admin' 
+  });
+  
+  const { data: logs = [] } = trpc.admin.getLogs.useQuery({ limit: 50 }, { 
+    enabled: isAuthenticated && user?.role === 'admin' 
+  });
+
+  // Mutations - Perfis
+  const approveProfileMutation = trpc.admin.approveProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Perfil aprovado com sucesso!");
+      utils.profiles.list.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Erro: ${error.message}`);
+    },
+  });
+
+  const rejectProfileMutation = trpc.admin.rejectProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Perfil rejeitado!");
+      utils.profiles.list.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Erro: ${error.message}`);
+    },
+  });
+
+  const toggleProfileActiveMutation = trpc.admin.toggleProfileActive.useMutation({
+    onSuccess: () => {
+      toast.success("Status atualizado!");
+      utils.profiles.list.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+  });
+
+  const toggleProfileFeatureMutation = trpc.admin.toggleProfileFeature.useMutation({
+    onSuccess: () => {
+      toast.success("Recurso atualizado!");
+      utils.profiles.list.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+  });
+
+  // Mutations - Pagamentos
+  const createPaymentMutation = trpc.admin.createPayment.useMutation({
+    onSuccess: () => {
+      toast.success("Pagamento registrado!");
+      utils.admin.getPayments.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+  });
+
+  const confirmPaymentMutation = trpc.admin.confirmPayment.useMutation({
+    onSuccess: () => {
+      toast.success("Pagamento confirmado!");
+      utils.admin.getPayments.invalidate();
+      utils.admin.getStats.invalidate();
+    },
+  });
+
+  // Mutations - Comentários
   const approveCommentMutation = trpc.comments.approve.useMutation({
     onSuccess: () => {
       toast.success("Comentário aprovado!");
+      utils.comments.listAll.invalidate();
+      utils.admin.getStats.invalidate();
     },
   });
 
   const deleteCommentMutation = trpc.comments.delete.useMutation({
     onSuccess: () => {
       toast.success("Comentário deletado!");
+      utils.comments.listAll.invalidate();
+      utils.admin.getStats.invalidate();
     },
+  });
+
+  // Estados para formulários
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedProfileForReject, setSelectedProfileForReject] = useState<number | null>(null);
+  
+  const [paymentForm, setPaymentForm] = useState({
+    profileId: 0,
+    amount: "",
+    paymentType: "vip" as "vip" | "featured" | "verification" | "monthly",
+    pixKey: "",
+    transactionId: "",
+    notes: "",
   });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="h-20 md:h-24"></div>
-        <div className="container py-12 text-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+          <p className="mt-4 text-muted-foreground">Carregando...</p>
         </div>
       </div>
     );
@@ -43,279 +141,666 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="h-20 md:h-24"></div>
-        <div className="container py-12 text-center">
-          <h1 className="text-3xl font-bold mb-4">Acesso Restrito</h1>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Acesso Restrito</h2>
           <p className="text-muted-foreground mb-6">Você precisa estar logado para acessar o painel administrativo.</p>
-          <a href={getLoginUrl()} className="btn-gradient px-6 py-3 rounded-md inline-block">
+          <Button onClick={() => window.location.href = getLoginUrl()}>
             Fazer Login
-          </a>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
 
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="h-20 md:h-24"></div>
-        <div className="container py-12 text-center">
-          <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Acesso Negado</h2>
           <p className="text-muted-foreground">Você não tem permissão para acessar esta página.</p>
-        </div>
+        </Card>
       </div>
     );
   }
 
+  const handleApproveProfile = (profileId: number) => {
+    approveProfileMutation.mutate({ profileId });
+  };
+
+  const handleRejectProfile = () => {
+    if (!selectedProfileForReject || !rejectReason.trim()) {
+      toast.error("Informe o motivo da rejeição");
+      return;
+    }
+    rejectProfileMutation.mutate({ 
+      profileId: selectedProfileForReject, 
+      reason: rejectReason 
+    });
+    setSelectedProfileForReject(null);
+    setRejectReason("");
+  };
+
+  const handleToggleActive = (profileId: number, isActive: boolean) => {
+    toggleProfileActiveMutation.mutate({ profileId, isActive: !isActive });
+  };
+
+  const handleToggleFeature = (profileId: number, feature: "isFeatured" | "isVip" | "isVerified" | "hasRealPhotos", currentValue: boolean) => {
+    toggleProfileFeatureMutation.mutate({ profileId, feature, value: !currentValue });
+  };
+
+  const handleCreatePayment = () => {
+    if (!paymentForm.profileId || !paymentForm.amount) {
+      toast.error("Preencha os campos obrigatórios");
+      return;
+    }
+    createPaymentMutation.mutate(paymentForm);
+    setPaymentForm({
+      profileId: 0,
+      amount: "",
+      paymentType: "vip",
+      pixKey: "",
+      transactionId: "",
+      notes: "",
+    });
+  };
+
+  const handleConfirmPayment = (paymentId: number) => {
+    confirmPaymentMutation.mutate({ paymentId });
+  };
+
+  const handleApproveComment = (commentId: number) => {
+    approveCommentMutation.mutate({ id: commentId });
+  };
+
+  const handleDeleteComment = (commentId: number) => {
+    deleteCommentMutation.mutate({ id: commentId });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="h-20 md:h-24"></div>
+      
+      <div className="h-20" />
 
       <div className="container py-8">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Painel Administrativo</h1>
-
-        {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Users size={24} className="text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total de Perfis</p>
-                <p className="text-2xl font-bold">{profiles.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                <MessageSquare size={24} className="text-secondary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Comentários Pendentes</p>
-                <p className="text-2xl font-bold">
-                  {allComments.filter(c => !c.isApproved).length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                <Tags size={24} className="text-accent" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Categorias</p>
-                <p className="text-2xl font-bold">{categories.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Users size={24} className="text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Perfis VIP</p>
-                <p className="text-2xl font-bold">
-                  {profiles.filter(p => p.isVip).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <h1 className="text-4xl font-bold gradient-text mb-8">Painel Administrativo</h1>
 
         {/* Tabs */}
-        <div className="bg-card rounded-lg border border-border">
-          <div className="flex border-b border-border overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('profiles')}
-              className={`px-6 py-4 font-medium transition-colors ${
-                activeTab === 'profiles'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Perfis
-            </button>
-            <button
-              onClick={() => setActiveTab('comments')}
-              className={`px-6 py-4 font-medium transition-colors ${
-                activeTab === 'comments'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Comentários
-            </button>
-            <button
-              onClick={() => setActiveTab('categories')}
-              className={`px-6 py-4 font-medium transition-colors ${
-                activeTab === 'categories'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Categorias
-            </button>
-          </div>
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          <Button
+            variant={activeTab === 'dashboard' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <Activity size={18} />
+            Dashboard
+          </Button>
+          <Button
+            variant={activeTab === 'profiles' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('profiles')}
+            className="flex items-center gap-2"
+          >
+            <Users size={18} />
+            Perfis ({stats?.pendingApproval || 0})
+          </Button>
+          <Button
+            variant={activeTab === 'payments' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('payments')}
+            className="flex items-center gap-2"
+          >
+            <DollarSign size={18} />
+            Pagamentos ({stats?.pendingPayments || 0})
+          </Button>
+          <Button
+            variant={activeTab === 'comments' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('comments')}
+            className="flex items-center gap-2"
+          >
+            <MessageSquare size={18} />
+            Comentários ({stats?.pendingComments || 0})
+          </Button>
+          <Button
+            variant={activeTab === 'logs' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('logs')}
+            className="flex items-center gap-2"
+          >
+            <Clock size={18} />
+            Logs
+          </Button>
+        </div>
 
-          <div className="p-6">
-            {/* Tab: Perfis */}
-            {activeTab === 'profiles' && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Gerenciar Perfis</h2>
-                  <Button className="btn-gradient">
-                    <Plus size={20} className="mr-2" />
-                    Novo Perfil
-                  </Button>
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && stats && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total de Perfis</p>
+                    <p className="text-3xl font-bold">{stats.totalProfiles}</p>
+                  </div>
+                  <Users className="text-primary" size={32} />
                 </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Perfis Ativos</p>
+                    <p className="text-3xl font-bold">{stats.activeProfiles}</p>
+                  </div>
+                  <CheckCircle className="text-green-500" size={32} />
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Aguardando Aprovação</p>
+                    <p className="text-3xl font-bold text-yellow-500">{stats.pendingApproval}</p>
+                  </div>
+                  <Clock className="text-yellow-500" size={32} />
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Receita Total</p>
+                    <p className="text-3xl font-bold text-green-500">R$ {stats.totalRevenue}</p>
+                  </div>
+                  <TrendingUp className="text-green-500" size={32} />
+                </div>
+              </Card>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Perfis Premium</h3>
                 <div className="space-y-2">
-                  {profiles.map((profile) => (
-                    <div
-                      key={profile.id}
-                      className="flex items-center justify-between p-4 bg-background rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">VIP:</span>
+                    <span className="font-bold">{stats.vipProfiles}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Destaque:</span>
+                    <span className="font-bold">{stats.featuredProfiles}</span>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Pagamentos</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Pendentes:</span>
+                    <span className="font-bold text-yellow-500">{stats.pendingPayments}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Confirmados:</span>
+                    <span className="font-bold text-green-500">{stats.confirmedPayments}</span>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Comentários</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Pendentes:</span>
+                    <span className="font-bold text-yellow-500">{stats.pendingComments}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Aprovados:</span>
+                    <span className="font-bold text-green-500">{stats.approvedComments}</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Profiles Tab */}
+        {activeTab === 'profiles' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Gerenciamento de Perfis</h2>
+            
+            {profiles.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-muted-foreground">Nenhum perfil cadastrado</p>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {profiles.map((profile) => (
+                  <Card key={profile.id} className="p-6">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {profile.photoUrl && (
                         <img
-                          src={profile.photoUrl || '/placeholder-profile.jpg'}
+                          src={profile.photoUrl}
                           alt={profile.name}
-                          className="w-16 h-16 object-cover rounded-lg"
+                          className="w-24 h-24 rounded-lg object-cover"
                         />
-                        <div>
-                          <h3 className="font-semibold">{profile.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {profile.city} - {profile.age} anos
-                          </p>
-                          <div className="flex gap-2 mt-1">
-                            {profile.isVip && <span className="tag text-xs">VIP</span>}
-                            {profile.isFeatured && <span className="tag text-xs">Destaque</span>}
-                            {!profile.isActive && <span className="tag text-xs bg-destructive">Inativo</span>}
+                      )}
+                      
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-xl font-bold">{profile.name}</h3>
+                            <p className="text-muted-foreground">
+                              {profile.age} anos • {profile.city}
+                            </p>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2">
+                            {profile.approvalStatus === 'pending' && (
+                              <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">
+                                Pendente
+                              </Badge>
+                            )}
+                            {profile.approvalStatus === 'approved' && (
+                              <Badge variant="outline" className="bg-green-500/10 text-green-500">
+                                Aprovado
+                              </Badge>
+                            )}
+                            {profile.approvalStatus === 'rejected' && (
+                              <Badge variant="outline" className="bg-red-500/10 text-red-500">
+                                Rejeitado
+                              </Badge>
+                            )}
+                            {profile.isActive && (
+                              <Badge variant="outline" className="bg-blue-500/10 text-blue-500">
+                                Ativo
+                              </Badge>
+                            )}
+                            {profile.isVip && (
+                              <Badge variant="outline" className="bg-purple-500/10 text-purple-500">
+                                <Crown size={14} className="mr-1" />
+                                VIP
+                              </Badge>
+                            )}
+                            {profile.isFeatured && (
+                              <Badge variant="outline" className="bg-pink-500/10 text-pink-500">
+                                <Star size={14} className="mr-1" />
+                                Destaque
+                              </Badge>
+                            )}
                           </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Editar</Button>
-                        <Button variant="destructive" size="sm">Deletar</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Tab: Comentários */}
-            {activeTab === 'comments' && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold mb-4">Moderar Comentários</h2>
-
-                {allComments.filter(c => !c.isApproved).length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    Nenhum comentário pendente
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {allComments
-                      .filter(c => !c.isApproved)
-                      .map((comment) => {
-                        const profile = profiles.find(p => p.id === comment.profileId);
-                        return (
-                          <div key={comment.id} className="p-4 bg-background rounded-lg">
-                            <div className="flex justify-between items-start mb-2">
-                              <div>
-                                <h4 className="font-semibold">{comment.authorName}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  Perfil: {profile?.name || 'Desconhecido'} | {comment.rating} estrelas
-                                </p>
-                              </div>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
-                              </span>
-                            </div>
-                            <p className="text-foreground mb-4">{comment.content}</p>
-                            <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {profile.approvalStatus === 'pending' && (
+                            <>
                               <Button
                                 size="sm"
-                                className="btn-gradient"
-                                onClick={() => approveCommentMutation.mutate({ id: comment.id })}
-                                disabled={approveCommentMutation.isPending}
+                                onClick={() => handleApproveProfile(profile.id)}
+                                className="flex items-center gap-2"
                               >
+                                <CheckCircle size={16} />
                                 Aprovar
                               </Button>
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={() => deleteCommentMutation.mutate({ id: comment.id })}
-                                disabled={deleteCommentMutation.isPending}
+                                onClick={() => setSelectedProfileForReject(profile.id)}
+                                className="flex items-center gap-2"
                               >
-                                Deletar
+                                <XCircle size={16} />
+                                Rejeitar
+                              </Button>
+                            </>
+                          )}
+                          
+                          {profile.approvalStatus === 'approved' && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleActive(profile.id, profile.isActive)}
+                                className="flex items-center gap-2"
+                              >
+                                {profile.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {profile.isActive ? 'Desativar' : 'Ativar'}
+                              </Button>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleFeature(profile.id, "isVip", profile.isVip)}
+                                className="flex items-center gap-2"
+                              >
+                                <Crown size={16} />
+                                {profile.isVip ? 'Remover VIP' : 'Tornar VIP'}
+                              </Button>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleFeature(profile.id, "isFeatured", profile.isFeatured)}
+                                className="flex items-center gap-2"
+                              >
+                                <Star size={16} />
+                                {profile.isFeatured ? 'Remover Destaque' : 'Destacar'}
+                              </Button>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleFeature(profile.id, "isVerified", profile.isVerified)}
+                                className="flex items-center gap-2"
+                              >
+                                <Shield size={16} />
+                                {profile.isVerified ? 'Remover Verificação' : 'Verificar'}
+                              </Button>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleFeature(profile.id, "hasRealPhotos", profile.hasRealPhotos)}
+                                className="flex items-center gap-2"
+                              >
+                                <Image size={16} />
+                                {profile.hasRealPhotos ? 'Desmarcar Fotos Reais' : 'Marcar Fotos Reais'}
+                              </Button>
+                            </>
+                          )}
+                        </div>
+
+                        {selectedProfileForReject === profile.id && (
+                          <div className="mt-4 p-4 bg-muted rounded-lg">
+                            <h4 className="font-semibold mb-2">Motivo da Rejeição:</h4>
+                            <Textarea
+                              value={rejectReason}
+                              onChange={(e) => setRejectReason(e.target.value)}
+                              placeholder="Descreva o motivo da rejeição..."
+                              className="mb-2"
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={handleRejectProfile}>
+                                Confirmar Rejeição
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedProfileForReject(null);
+                                  setRejectReason("");
+                                }}
+                              >
+                                Cancelar
                               </Button>
                             </div>
                           </div>
-                        );
-                      })}
-                  </div>
-                )}
-              </div>
-            )}
+                        )}
 
-            {/* Tab: Categorias */}
-            {activeTab === 'categories' && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Gerenciar Categorias</h2>
-                  <Button className="btn-gradient">
-                    <Plus size={20} className="mr-2" />
-                    Nova Categoria
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {categories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="p-4 bg-background rounded-lg border border-border"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span
-                          className="tag"
-                          style={{ background: category.color || undefined }}
-                        >
-                          {category.name}
-                        </span>
-                      </div>
-                      {category.description && (
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {category.description}
-                        </p>
-                      )}
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
-                          Editar
-                        </Button>
-                        <Button variant="destructive" size="sm">
-                          Deletar
-                        </Button>
+                        {profile.rejectionReason && (
+                          <div className="mt-4 p-4 bg-red-500/10 rounded-lg">
+                            <p className="text-sm text-red-500">
+                              <strong>Motivo da rejeição:</strong> {profile.rejectionReason}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </Card>
+                ))}
               </div>
             )}
           </div>
-        </div>
+        )}
+
+        {/* Payments Tab */}
+        {activeTab === 'payments' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Registrar Novo Pagamento PIX</h2>
+              <Card className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Perfil ID *</label>
+                    <Input
+                      type="number"
+                      value={paymentForm.profileId || ""}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, profileId: parseInt(e.target.value) || 0 })}
+                      placeholder="ID do perfil"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Valor (R$) *</label>
+                    <Input
+                      type="text"
+                      value={paymentForm.amount}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                      placeholder="100.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Tipo de Pagamento *</label>
+                    <select
+                      value={paymentForm.paymentType}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, paymentType: e.target.value as any })}
+                      className="w-full p-2 border rounded-md bg-background"
+                    >
+                      <option value="vip">VIP</option>
+                      <option value="featured">Destaque</option>
+                      <option value="verification">Verificação</option>
+                      <option value="monthly">Mensalidade</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Chave PIX</label>
+                    <Input
+                      type="text"
+                      value={paymentForm.pixKey}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, pixKey: e.target.value })}
+                      placeholder="Chave PIX usada"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">ID da Transação</label>
+                    <Input
+                      type="text"
+                      value={paymentForm.transactionId}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, transactionId: e.target.value })}
+                      placeholder="ID da transação PIX"
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Observações</label>
+                    <Textarea
+                      value={paymentForm.notes}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, notes: e.target.value })}
+                      placeholder="Observações sobre o pagamento..."
+                    />
+                  </div>
+                </div>
+                
+                <Button onClick={handleCreatePayment} className="mt-4">
+                  Registrar Pagamento
+                </Button>
+              </Card>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Pagamentos Registrados</h2>
+              {payments.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <p className="text-muted-foreground">Nenhum pagamento registrado</p>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  {payments.map((payment) => (
+                    <Card key={payment.id} className="p-6">
+                      <div className="flex flex-col md:flex-row justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-lg font-bold">Perfil ID: {payment.profileId}</h3>
+                            {payment.status === 'pending' && (
+                              <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">
+                                Pendente
+                              </Badge>
+                            )}
+                            {payment.status === 'confirmed' && (
+                              <Badge variant="outline" className="bg-green-500/10 text-green-500">
+                                Confirmado
+                              </Badge>
+                            )}
+                            {payment.status === 'cancelled' && (
+                              <Badge variant="outline" className="bg-red-500/10 text-red-500">
+                                Cancelado
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-1 text-sm">
+                            <p><strong>Valor:</strong> R$ {payment.amount}</p>
+                            <p><strong>Tipo:</strong> {payment.paymentType}</p>
+                            {payment.pixKey && <p><strong>Chave PIX:</strong> {payment.pixKey}</p>}
+                            {payment.transactionId && <p><strong>ID Transação:</strong> {payment.transactionId}</p>}
+                            {payment.notes && <p><strong>Obs:</strong> {payment.notes}</p>}
+                            <p className="text-muted-foreground">
+                              Criado em: {new Date(payment.createdAt).toLocaleString('pt-BR')}
+                            </p>
+                            {payment.paidAt && (
+                              <p className="text-green-500">
+                                Pago em: {new Date(payment.paidAt).toLocaleString('pt-BR')}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {payment.status === 'pending' && (
+                          <div className="flex items-center">
+                            <Button
+                              onClick={() => handleConfirmPayment(payment.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <CheckCircle size={16} />
+                              Confirmar Pagamento
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Comments Tab */}
+        {activeTab === 'comments' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Moderação de Comentários</h2>
+            
+            {allComments.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-muted-foreground">Nenhum comentário encontrado</p>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {allComments.map((comment) => (
+                  <Card key={comment.id} className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-bold">{comment.authorName}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Perfil ID: {comment.profileId} • {new Date(comment.createdAt).toLocaleString('pt-BR')}
+                        </p>
+                        <div className="flex mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={14}
+                              className={i < comment.rating ? "star filled" : "star"}
+                              fill={i < comment.rating ? "currentColor" : "none"}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {comment.isApproved ? (
+                        <Badge variant="outline" className="bg-green-500/10 text-green-500">
+                          Aprovado
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">
+                          Pendente
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <p className="text-foreground mb-4">{comment.content}</p>
+                    
+                    <div className="flex gap-2">
+                      {!comment.isApproved && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleApproveComment(comment.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle size={16} />
+                          Aprovar
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className="flex items-center gap-2"
+                      >
+                        <XCircle size={16} />
+                        Deletar
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Logs Tab */}
+        {activeTab === 'logs' && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Logs Administrativos</h2>
+            
+            {logs.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-muted-foreground">Nenhum log encontrado</p>
+              </Card>
+            ) : (
+              <div className="space-y-2">
+                {logs.map((log) => (
+                  <Card key={log.id} className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{log.action}</Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {log.targetType} #{log.targetId}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Admin ID: {log.adminId} • {new Date(log.createdAt).toLocaleString('pt-BR')}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Footer */}
       <footer className="bg-card py-8 border-t border-border mt-12">
         <div className="container text-center text-muted-foreground">
           <p>&copy; 2026 farialover. Todos os direitos reservados.</p>

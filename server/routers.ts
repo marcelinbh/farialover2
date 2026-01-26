@@ -438,6 +438,170 @@ export const appRouter = router({
         return await db.deleteTestimonial(input.id);
       }),
   }),
+
+  // ===== ADMIN ROUTES =====
+  admin: router({
+    // Gerenciamento de Perfis
+    approveProfile: protectedProcedure
+      .input(z.object({ profileId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.approveProfile(input.profileId, ctx.user.id);
+      }),
+
+    rejectProfile: protectedProcedure
+      .input(z.object({ profileId: z.number(), reason: z.string().min(1) }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.rejectProfile(input.profileId, ctx.user.id, input.reason);
+      }),
+
+    toggleProfileActive: protectedProcedure
+      .input(z.object({ profileId: z.number(), isActive: z.boolean() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.toggleProfileActive(input.profileId, ctx.user.id, input.isActive);
+      }),
+
+    toggleProfileFeature: protectedProcedure
+      .input(z.object({
+        profileId: z.number(),
+        feature: z.enum(["isFeatured", "isVip", "isVerified", "hasRealPhotos"]),
+        value: z.boolean(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.toggleProfileFeature(input.profileId, ctx.user.id, input.feature, input.value);
+      }),
+
+    // Gerenciamento de Pagamentos
+    getPayments: protectedProcedure
+      .input(z.object({
+        profileId: z.number().optional(),
+        status: z.enum(["pending", "confirmed", "cancelled"]).optional(),
+        paymentType: z.enum(["vip", "featured", "verification", "monthly"]).optional(),
+      }).optional())
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.getAllPayments(input);
+      }),
+
+    createPayment: protectedProcedure
+      .input(z.object({
+        profileId: z.number(),
+        amount: z.string(),
+        paymentType: z.enum(["vip", "featured", "verification", "monthly"]),
+        pixKey: z.string().optional(),
+        transactionId: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.createPayment({
+          ...input,
+          status: "pending",
+        });
+      }),
+
+    confirmPayment: protectedProcedure
+      .input(z.object({ paymentId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        await db.confirmPayment(input.paymentId, ctx.user.id);
+        
+        await db.createAdminLog({
+          adminId: ctx.user.id,
+          action: "confirm_payment",
+          targetType: "payment",
+          targetId: input.paymentId,
+          details: JSON.stringify({ paymentId: input.paymentId }),
+        });
+        
+        return { success: true };
+      }),
+
+    updatePayment: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        amount: z.string().optional(),
+        status: z.enum(["pending", "confirmed", "cancelled"]).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        const { id, ...data } = input;
+        return await db.updatePayment(id, data);
+      }),
+
+    deletePayment: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.deletePayment(input.id);
+      }),
+
+    // Logs Administrativos
+    getLogs: protectedProcedure
+      .input(z.object({
+        adminId: z.number().optional(),
+        action: z.string().optional(),
+        targetType: z.string().optional(),
+        limit: z.number().optional(),
+      }).optional())
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.getAdminLogs(input);
+      }),
+
+    // Dashboard Stats
+    getStats: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        
+        const allProfiles = await db.getAllProfiles();
+        const allPayments = await db.getAllPayments();
+        const allComments = await db.getAllComments();
+        
+        return {
+          totalProfiles: allProfiles.length,
+          activeProfiles: allProfiles.filter(p => p.isActive).length,
+          pendingApproval: allProfiles.filter(p => p.approvalStatus === 'pending').length,
+          vipProfiles: allProfiles.filter(p => p.isVip).length,
+          featuredProfiles: allProfiles.filter(p => p.isFeatured).length,
+          totalPayments: allPayments.length,
+          pendingPayments: allPayments.filter(p => p.status === 'pending').length,
+          confirmedPayments: allPayments.filter(p => p.status === 'confirmed').length,
+          totalRevenue: allPayments
+            .filter(p => p.status === 'confirmed')
+            .reduce((sum, p) => sum + parseFloat(p.amount as string), 0)
+            .toFixed(2),
+          pendingComments: allComments.filter(c => !c.isApproved).length,
+          approvedComments: allComments.filter(c => c.isApproved).length,
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
