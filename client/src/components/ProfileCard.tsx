@@ -16,14 +16,14 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
       navigator.share({
         title: profile.name,
         text: `Confira o perfil de ${profile.name}`,
-        url: window.location.origin + `/profile/${profile.id}`,
+        url: window.location.origin + `/perfil/${profile.id}`,
       });
     }
   };
 
   return (
     <div className="profile-card">
-      <Link href={`/profile/${profile.id}`} className="block relative aspect-[3/4] overflow-hidden">
+      <Link href={`/perfil/${profile.id}`} className="block relative aspect-[3/4] overflow-hidden">
         <img
           src={profile.photoUrl || '/placeholder-profile.jpg'}
           alt={profile.name}
@@ -60,7 +60,7 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
         )}
 
         {/* Nome e Idade */}
-        <Link href={`/profile/${profile.id}`} className="block">
+        <Link href={`/perfil/${profile.id}`} className="block">
           <h3 className="text-xl font-bold text-foreground hover:text-primary transition-colors">
             {profile.name}
           </h3>

@@ -149,3 +149,7 @@
 - [x] Gerar nova logo profissional sem fundo branco (cores farialover)
 - [x] Replicar perfil EXATAMENTE como agenda31 com cores farialover
 - [x] Testar todas as mudanças
+
+## Correção de Rota 404
+- [x] Corrigir rota /perfil/:id no App.tsx (estava como /profile/:id)
+- [x] Testar navegação de perfis

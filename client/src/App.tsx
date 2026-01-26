@@ -15,7 +15,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
-      <Route path={"/profile/:id"} component={ProfileDetail} />
+      <Route path={"/perfil/:id"} component={ProfileDetail} />
       <Route path={"/videos"} component={Videos} />
       <Route path={"/audios"} component={Audios} />
       <Route path={"/depoimentos"} component={Testimonials} />
