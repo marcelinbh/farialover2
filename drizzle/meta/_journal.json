@@ -15,6 +15,13 @@
       "when": 1769448787022,
       "tag": "0001_brainy_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1769452132907,
+      "tag": "0002_productive_photon",
+      "breakpoints": true
     }
   ]
 }

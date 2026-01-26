@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Phone, Share2, Star } from "lucide-react";
 import { Profile } from "../../../drizzle/schema";
+import VerificationBadges from "./VerificationBadges";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -38,6 +39,13 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
       </Link>
       
       <div className="p-4 space-y-3">
+        {/* Badges de Verificação */}
+        <VerificationBadges
+          isVerified={profile.isVerified}
+          hasRealPhotos={profile.hasRealPhotos}
+          size="sm"
+        />
+
         {/* Categorias */}
         {categories.length > 0 && (
           <div className="flex flex-wrap gap-2">

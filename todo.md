@@ -75,3 +75,13 @@
 - [x] Implementar sistema de galeria de fotos nos perfis
 - [x] Fazer upload de todas as fotos para S3
 - [x] Atualizar interface para exibir galeria de fotos
+
+## Lightbox e Sistema de Verificação
+- [x] Adicionar campos de verificação no schema do banco (isVerified, hasRealPhotos)
+- [x] Atualizar perfis existentes com status de verificação
+- [x] Implementar componente Lightbox para galeria de fotos
+- [x] Adicionar navegação entre fotos no lightbox (setas esquerda/direita)
+- [x] Criar componente de badges de verificação
+- [x] Integrar badges na página de detalhes do perfil
+- [x] Integrar badges nos cards de perfil da home
+- [x] Testar todas as funcionalidades

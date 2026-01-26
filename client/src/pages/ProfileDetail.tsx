@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
+import Lightbox from "@/components/Lightbox";
+import VerificationBadges from "@/components/VerificationBadges";
 import { Phone, Star, MapPin, User, Ruler, Weight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +24,8 @@ export default function ProfileDetail() {
   const [rating, setRating] = useState(5);
   const [authorName, setAuthorName] = useState("");
   const [commentContent, setCommentContent] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const createCommentMutation = trpc.comments.create.useMutation({
     onSuccess: () => {
@@ -97,13 +101,16 @@ export default function ProfileDetail() {
                 <div className="p-4 border-t border-border">
                   <h3 className="text-sm font-semibold text-foreground mb-3">Galeria de Fotos</h3>
                   <div className="grid grid-cols-4 gap-2">
-                    {photos.map((photo) => (
+                    {photos.map((photo, index) => (
                       <img
                         key={photo.id}
                         src={photo.url}
                         alt={`Foto ${photo.order}`}
                         className="w-full aspect-square object-cover rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
-                        onClick={() => window.open(photo.url, '_blank')}
+                        onClick={() => {
+                          setLightboxIndex(index);
+                          setLightboxOpen(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -112,6 +119,13 @@ export default function ProfileDetail() {
               
               <div className="p-6 space-y-4">
                 <h1 className="text-3xl font-bold gradient-text">{profile.name}</h1>
+
+                {/* Badges de Verificação */}
+                <VerificationBadges
+                  isVerified={profile.isVerified}
+                  hasRealPhotos={profile.hasRealPhotos}
+                  size="md"
+                />
 
                 {/* Categorias */}
                 {categories.length > 0 && (
@@ -322,6 +336,14 @@ export default function ProfileDetail() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox */}
+      <Lightbox
+        images={photos}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
 
       {/* Footer */}
       <footer className="bg-card py-8 border-t border-border mt-12">

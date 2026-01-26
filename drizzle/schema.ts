@@ -31,6 +31,8 @@ export const profiles = mysqlTable("profiles", {
   isActive: boolean("isActive").default(true).notNull(),
   isFeatured: boolean("isFeatured").default(false).notNull(), // destaque no banner
   isVip: boolean("isVip").default(false).notNull(),
+  isVerified: boolean("isVerified").default(false).notNull(), // perfil verificado
+  hasRealPhotos: boolean("hasRealPhotos").default(false).notNull(), // fotos reais verificadas
   viewCount: int("viewCount").default(0).notNull(),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"), // média de avaliações
   ratingCount: int("ratingCount").default(0).notNull(),
