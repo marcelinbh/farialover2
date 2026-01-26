@@ -65,11 +65,10 @@ export default function Home() {
                 index === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <div className="absolute inset-0 bg-black"></div>
               <img
                 src={profile.photoUrl || '/placeholder-profile.jpg'}
                 alt={profile.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/30 to-black/80"></div>
               

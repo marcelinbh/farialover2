@@ -7,58 +7,38 @@ export default function Header() {
       <div className="container">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
-          <Link href="/">
-            <a className="flex items-center">
-              <img src="/logo.png" alt="farialover" className="h-12 md:h-16" />
-            </a>
+          <Link href="/" className="flex items-center">
+            <img src="/logo.png" alt="farialover" className="h-12 md:h-16" />
           </Link>
 
           {/* Navegação Desktop */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                HOME
-              </a>
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              HOME
             </Link>
-            <Link href="/">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                MODELOS
-              </a>
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              MODELOS
             </Link>
-            <Link href="/">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                CIDADES
-              </a>
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              CIDADES
             </Link>
-            <Link href="/videos">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                VÍDEOS
-              </a>
+            <Link href="/videos" className="text-foreground hover:text-primary transition-colors font-medium">
+              VÍDEOS
             </Link>
-            <Link href="/audios">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                ÁUDIOS
-              </a>
+            <Link href="/audios" className="text-foreground hover:text-primary transition-colors font-medium">
+              ÁUDIOS
             </Link>
-            <Link href="/">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                ATUALIZAÇÕES
-              </a>
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              ATUALIZAÇÕES
             </Link>
-            <Link href="/">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                SERVIÇOS
-              </a>
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              SERVIÇOS
             </Link>
-            <Link href="/depoimentos">
-              <a className="text-foreground hover:text-primary transition-colors font-medium">
-                DEPOIMENTOS
-              </a>
+            <Link href="/depoimentos" className="text-foreground hover:text-primary transition-colors font-medium">
+              DEPOIMENTOS
             </Link>
-            <Link href="/">
-              <a className="btn-gradient px-4 py-2 rounded-md text-sm">
-                ANUNCIE AQUI
-              </a>
+            <Link href="/" className="btn-gradient px-4 py-2 rounded-md text-sm">
+              ANUNCIE AQUI
             </Link>
           </nav>
 

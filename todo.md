@@ -128,3 +128,8 @@
 - [x] Fazer upload das fotos horizontais para S3
 - [x] Atualizar perfis com novas fotos de banner
 - [x] Testar e validar que a foto completa aparece
+
+## Correção Urgente do Banner
+- [x] Investigar por que o banner não está exibindo a imagem
+- [x] Corrigir erro de elementos <a> aninhados
+- [x] Testar e validar que o banner exibe a foto corretamente
