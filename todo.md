@@ -153,3 +153,7 @@
 ## Correção de Rota 404
 - [x] Corrigir rota /perfil/:id no App.tsx (estava como /profile/:id)
 - [x] Testar navegação de perfis
+
+## Stories com Vídeos e APIs Externas
+- [x] Implementar Stories clicáveis com animação CSS (zoom/fade)
+- [x] Criar lista de APIs externas necessárias (hospedagem, player de vídeo, player de áudio)

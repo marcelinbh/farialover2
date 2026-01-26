@@ -289,6 +289,18 @@
 .story-item img {
   @apply w-full h-full object-cover rounded-full;
   border: 2px solid oklch(0 0 0);
+  animation: story-zoom 5s ease-in-out infinite;
+}
+
+@keyframes story-zoom {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
 }
 
 /* Video e Audio players */
