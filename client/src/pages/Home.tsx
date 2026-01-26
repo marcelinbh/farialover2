@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import ProfileCard from "@/components/ProfileCard";
 import FilterSidebar, { FilterValues } from "@/components/FilterSidebar";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import StoryViewer from "@/components/StoryViewer";
 import { ChevronLeft, ChevronRight, MapPin, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [filters, setFilters] = useState<Partial<FilterValues>>({});
+  const [storyViewerOpen, setStoryViewerOpen] = useState(false);
+  const [storyInitialIndex, setStoryInitialIndex] = useState(0);
   
   const { data: profiles = [], isLoading } = trpc.profiles.list.useQuery({
     search: searchTerm || undefined,
@@ -122,21 +125,40 @@ export default function Home() {
         <div className="container">
           <h2 className="text-2xl font-bold mb-4 gradient-text">STORIES</h2>
           <div className="stories-container">
-            {profiles.slice(0, 20).map((profile) => (
-              <Link
+            {profiles.slice(0, 20).map((profile, index) => (
+              <button
                 key={profile.id}
-                href={`/perfil/${profile.id}`}
+                onClick={() => {
+                  setStoryInitialIndex(index);
+                  setStoryViewerOpen(true);
+                }}
                 className="story-item"
               >
                 <img
                   src={profile.photoUrl || '/placeholder-profile.jpg'}
                   alt={profile.name}
                 />
-              </Link>
+              </button>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Story Viewer Modal */}
+      {storyViewerOpen && (
+        <StoryViewer
+          stories={profiles.slice(0, 20).map((profile) => ({
+            id: profile.id,
+            profileId: profile.id,
+            profileName: profile.name,
+            profilePhoto: profile.photoUrl || '/placeholder-profile.jpg',
+            profilePhone: profile.phone,
+            imageUrl: profile.photoUrl || '/placeholder-profile.jpg',
+          }))}
+          initialIndex={storyInitialIndex}
+          onClose={() => setStoryViewerOpen(false)}
+        />
+      )}
 
       {/* Filtros e Busca */}
       <section className="py-6 bg-card/30">

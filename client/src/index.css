@@ -330,3 +330,228 @@ video, audio {
 .star:hover {
   color: oklch(0.55 0.35 300);
 }
+
+/* Story Viewer (Modal Fullscreen) */
+.story-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-viewer-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 100vh;
+  max-height: 900px;
+  background: #000;
+  border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  .story-viewer-container {
+    border-radius: 12px;
+    height: 90vh;
+  }
+}
+
+.story-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 16px;
+}
+
+.story-progress-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.story-progress-bar-wrapper {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.story-progress-bar {
+  height: 100%;
+  background: white;
+  transition: width 0.1s linear;
+}
+
+.story-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.story-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid oklch(0.55 0.35 300);
+}
+
+.story-profile-name {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.story-profile-name:hover {
+  text-decoration: underline;
+}
+
+.story-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.story-close-btn:hover {
+  opacity: 0.7;
+}
+
+.story-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.story-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.story-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.story-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.story-nav-prev {
+  left: 16px;
+}
+
+.story-nav-next {
+  right: 16px;
+}
+
+.story-click-area {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.story-click-prev {
+  left: 0;
+}
+
+.story-click-next {
+  right: 0;
+}
+
+.story-actions {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.story-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.story-action-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: scale(1.05);
+}
+
+.story-action-whatsapp {
+  background: rgba(37, 211, 102, 0.9);
+  border-color: rgba(37, 211, 102, 0.5);
+}
+
+.story-action-whatsapp:hover {
+  background: rgba(37, 211, 102, 1);
+}
+
+/* Mobile: esconder botões de navegação */
+@media (max-width: 767px) {
+  .story-nav-btn {
+    display: none;
+  }
+  
+  .story-actions {
+    bottom: 16px;
+    gap: 8px;
+  }
+  
+  .story-action-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .story-action-btn span {
+    display: none;
+  }
+}

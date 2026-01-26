@@ -157,3 +157,11 @@
 ## Stories com Vídeos e APIs Externas
 - [x] Implementar Stories clicáveis com animação CSS (zoom/fade)
 - [x] Criar lista de APIs externas necessárias (hospedagem, player de vídeo, player de áudio)
+
+## Deploy GitHub + DigitalOcean
+- [x] Criar guia completo de deploy para GitHub + DigitalOcean
+
+## Stories Completo (Modal Fullscreen)
+- [x] Criar componente StoryViewer completo (modal fullscreen, barra de progresso, navegação)
+- [x] Integrar StoryViewer no Home.tsx
+- [x] Testar Stories completo
