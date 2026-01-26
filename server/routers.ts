@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import { searchProfiles, getProfilePhotos } from "./supabase";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import { TRPCError } from "@trpc/server";
@@ -24,6 +25,29 @@ export const appRouter = router({
 
   // ===== PROFILE ROUTES =====
   profiles: router({
+    // Busca no Supabase com filtros avançados
+    search: publicProcedure
+      .input(z.object({
+        name: z.string().optional(),
+        city: z.string().optional(),
+        minAge: z.number().optional(),
+        maxAge: z.number().optional(),
+        hairColor: z.string().optional(),
+        bodyType: z.string().optional(),
+        minPrice: z.number().optional(),
+        maxPrice: z.number().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await searchProfiles(input || {});
+      }),
+
+    // Buscar fotos de um perfil no Supabase
+    getSupabasePhotos: publicProcedure
+      .input(z.object({ profileId: z.number() }))
+      .query(async ({ input }) => {
+        return await getProfilePhotos(input.profileId);
+      }),
+
     list: publicProcedure
       .input(z.object({
         city: z.string().optional(),

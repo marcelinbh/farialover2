@@ -177,3 +177,14 @@
 - [x] Remover itens: LAR, ATUALIZAÇÕES, SERVIÇOS, DEPOIMENTOS
 - [x] Trocar "ANUNCIE AQUI" por "CONTATO"
 - [x] Menu final: HOME, MODELOS, CIDADES, VÍDEOS, ÁUDIOS, CONTATO
+
+## Remover Redes Sociais do Header
+- [x] Remover ícones de Facebook, Twitter, Instagram do Header
+
+## Migração para Supabase + Filtros Avançados
+- [x] Configurar credenciais do Supabase no projeto
+- [x] Criar schema no Supabase (profiles, photos, etc.)
+- [x] Migrar dados existentes para Supabase (8 perfis + 64 fotos)
+- [x] Implementar componente de Filtros Avançados
+- [x] Conectar filtros com busca no Supabase
+- [x] Testar filtros (nome, idade, cidade, características)

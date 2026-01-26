@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
 import ProfileCard from "@/components/ProfileCard";
 import FilterSidebar, { FilterValues } from "@/components/FilterSidebar";
+import AdvancedFilters, { FilterValues as AdvancedFilterValues } from "@/components/AdvancedFilters";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StoryViewer from "@/components/StoryViewer";
 import { ChevronLeft, ChevronRight, MapPin, SlidersHorizontal } from "lucide-react";
@@ -14,13 +15,22 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [filters, setFilters] = useState<Partial<FilterValues>>({});
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilterValues>({});
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [storyInitialIndex, setStoryInitialIndex] = useState(0);
   
-  const { data: profiles = [], isLoading } = trpc.profiles.list.useQuery({
+  // Buscar perfis no Supabase com filtros avançados
+  const { data: supabaseProfiles = [], isLoading: isLoadingSupabase } = trpc.profiles.search.useQuery(advancedFilters);
+  
+  // Buscar perfis no MySQL (fallback)
+  const { data: mysqlProfiles = [], isLoading } = trpc.profiles.list.useQuery({
     search: searchTerm || undefined,
     ...filters,
   });
+  
+  // Usar perfis do Supabase se houver filtros avançados, senão usar MySQL
+  const hasAdvancedFilters = Object.keys(advancedFilters).length > 0;
+  const profiles = hasAdvancedFilters ? supabaseProfiles : mysqlProfiles;
 
   // Perfis para Stories (primeiros 20)
   const storyProfiles = profiles.slice(0, 20);
@@ -53,6 +63,14 @@ export default function Home() {
 
   const handleApplyFilters = (newFilters: FilterValues) => {
     setFilters(newFilters);
+  };
+  
+  const handleApplyAdvancedFilters = (newFilters: AdvancedFilterValues) => {
+    setAdvancedFilters(newFilters);
+  };
+  
+  const handleClearAdvancedFilters = () => {
+    setAdvancedFilters({});
   };
 
   return (
@@ -174,14 +192,10 @@ export default function Home() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1"
             />
-            <Button
-              onClick={() => setFilterSidebarOpen(true)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <SlidersHorizontal size={18} />
-              Filtros Avançados
-            </Button>
+            <AdvancedFilters
+              onApplyFilters={handleApplyAdvancedFilters}
+              onClearFilters={handleClearAdvancedFilters}
+            />
           </div>
         </div>
       </section>

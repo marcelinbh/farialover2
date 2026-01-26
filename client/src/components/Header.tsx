@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Facebook, Twitter, Instagram } from "lucide-react";
 
 export default function Header() {
   return (
@@ -33,18 +32,7 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Redes Sociais */}
-          <div className="hidden md:flex items-center gap-3">
-            <a href="#" className="text-foreground hover:text-primary transition-colors">
-              <Facebook size={20} />
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors">
-              <Twitter size={20} />
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors">
-              <Instagram size={20} />
-            </a>
-          </div>
+
 
           {/* Menu Mobile (TODO) */}
           <button className="md:hidden text-foreground">
