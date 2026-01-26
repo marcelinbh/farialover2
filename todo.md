@@ -85,3 +85,17 @@
 - [x] Integrar badges na página de detalhes do perfil
 - [x] Integrar badges nos cards de perfil da home
 - [x] Testar todas as funcionalidades
+
+## Sistema de Filtros Avançados e Depoimentos
+- [x] Criar componente FilterSidebar com interface deslizante
+- [x] Adicionar filtros por idade (range slider)
+- [x] Adicionar filtros por altura e peso
+- [x] Adicionar filtros por região/cidade
+- [x] Adicionar filtros por categorias (checkboxes)
+- [x] Implementar lógica de filtragem no backend
+- [x] Integrar filtros na página Home
+- [x] Criar tabela de depoimentos no banco de dados
+- [x] Criar página de depoimentos (/depoimentos)
+- [x] Implementar sistema de destaque de depoimentos verificados
+- [x] Adicionar seção de depoimentos na home
+- [x] Testar todas as funcionalidades

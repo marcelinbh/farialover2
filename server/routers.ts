@@ -31,6 +31,13 @@ export const appRouter = router({
         search: z.string().optional(),
         isVip: z.boolean().optional(),
         isFeatured: z.boolean().optional(),
+        ageMin: z.number().optional(),
+        ageMax: z.number().optional(),
+        heightMin: z.number().optional(),
+        heightMax: z.number().optional(),
+        weightMin: z.number().optional(),
+        weightMax: z.number().optional(),
+        categoryIds: z.array(z.number()).optional(),
       }).optional())
       .query(async ({ input }) => {
         return await db.getAllProfiles({ ...input, isActive: true });
@@ -364,6 +371,71 @@ export const appRouter = router({
           throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
         }
         return await db.deleteComment(input.id);
+      }),
+  }),
+
+  // ===== TESTIMONIALS ROUTES =====
+  testimonials: router({
+    list: publicProcedure
+      .input(z.object({
+        profileId: z.number().optional(),
+        isVerified: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await db.getAllTestimonials(input);
+      }),
+
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTestimonialById(input.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        profileId: z.number().optional(),
+        authorName: z.string().min(1),
+        authorPhoto: z.string().optional(),
+        content: z.string().min(1),
+        rating: z.number().min(1).max(5),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.createTestimonial({
+          ...input,
+          isVerified: true,
+          isFeatured: false,
+        });
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        authorName: z.string().optional(),
+        authorPhoto: z.string().optional(),
+        content: z.string().optional(),
+        rating: z.number().min(1).max(5).optional(),
+        isVerified: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        const { id, ...data } = input;
+        return await db.updateTestimonial(id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        return await db.deleteTestimonial(input.id);
       }),
   }),
 });

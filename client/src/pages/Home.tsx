@@ -2,19 +2,20 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
 import ProfileCard from "@/components/ProfileCard";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import FilterSidebar, { FilterValues } from "@/components/FilterSidebar";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import { ChevronLeft, ChevronRight, MapPin, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("");
+  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
+  const [filters, setFilters] = useState<Partial<FilterValues>>({});
   
   const { data: profiles = [], isLoading } = trpc.profiles.list.useQuery({
     search: searchTerm || undefined,
-    city: selectedCity || undefined,
-    region: selectedRegion || undefined,
+    ...filters,
   });
 
   const { data: featuredProfiles = [] } = trpc.profiles.list.useQuery({
@@ -41,6 +42,10 @@ export default function Home() {
   const getProfileCategories = (profileId: number) => {
     // TODO: Implementar query para buscar categorias do perfil
     return [];
+  };
+
+  const handleApplyFilters = (newFilters: FilterValues) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -140,20 +145,14 @@ export default function Home() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1"
             />
-            <Input
-              type="text"
-              placeholder="Cidade..."
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="md:w-48"
-            />
-            <Input
-              type="text"
-              placeholder="Região/Bairro..."
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="md:w-48"
-            />
+            <Button
+              onClick={() => setFilterSidebarOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <SlidersHorizontal size={18} />
+              Filtros Avançados
+            </Button>
           </div>
         </div>
       </section>
@@ -176,12 +175,14 @@ export default function Home() {
         </section>
       )}
 
-      {/* Listagem Principal de Perfis */}
+      {/* Listagem      {/* Depoimentos em Destaque */}
+      <TestimonialsSection />
+
+      {/* Todos os Perfis */}
       <section className="py-12">
         <div className="container">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold gradient-text">TODOS OS PERFIS</h2>
-            <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold gradient-text">TODOS OS PERFIS</h2>        <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin size={20} />
               <span>{profiles.length} perfis encontrados</span>
             </div>
@@ -209,6 +210,14 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* FilterSidebar */}
+      <FilterSidebar
+        isOpen={filterSidebarOpen}
+        onClose={() => setFilterSidebarOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        categories={categories}
+      />
 
       {/* Footer */}
       <footer className="bg-card py-8 border-t border-border">

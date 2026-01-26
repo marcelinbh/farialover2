@@ -50,9 +50,9 @@ export default function Header() {
                 SERVIÇOS
               </a>
             </Link>
-            <Link href="/">
+            <Link href="/depoimentos">
               <a className="text-foreground hover:text-primary transition-colors font-medium">
-                BLOG
+                DEPOIMENTOS
               </a>
             </Link>
             <Link href="/">

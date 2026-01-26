@@ -127,3 +127,20 @@ export const comments = mysqlTable("comments", {
 
 export type Comment = typeof comments.$inferSelect;
 export type InsertComment = typeof comments.$inferInsert;
+
+// Tabela de depoimentos verificados
+export const testimonials = mysqlTable("testimonials", {
+  id: int("id").autoincrement().primaryKey(),
+  profileId: int("profileId"), // pode ser null para depoimentos gerais
+  authorName: varchar("authorName", { length: 255 }).notNull(),
+  authorPhoto: text("authorPhoto"), // URL da foto do autor
+  content: text("content").notNull(),
+  rating: int("rating").notNull(), // 1-5 estrelas
+  isVerified: boolean("isVerified").default(false).notNull(), // depoimento verificado
+  isFeatured: boolean("isFeatured").default(false).notNull(), // destaque na home
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = typeof testimonials.$inferInsert;

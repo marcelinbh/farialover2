@@ -1,4 +1,4 @@
-import { eq, desc, and, like, sql, or, inArray } from "drizzle-orm";
+import { eq, desc, and, like, sql, or, inArray, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, 
@@ -8,7 +8,8 @@ import {
   photos, InsertPhoto, Photo,
   videos, InsertVideo, Video,
   audios, InsertAudio, Audio,
-  comments, InsertComment, Comment
+  comments, InsertComment, Comment,
+  testimonials, InsertTestimonial, Testimonial
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -111,6 +112,13 @@ export async function getAllProfiles(filters?: {
   isFeatured?: boolean;
   isVip?: boolean;
   search?: string;
+  ageMin?: number;
+  ageMax?: number;
+  heightMin?: number;
+  heightMax?: number;
+  weightMin?: number;
+  weightMax?: number;
+  categoryIds?: number[];
 }) {
   const db = await getDb();
   if (!db) return [];
@@ -118,7 +126,7 @@ export async function getAllProfiles(filters?: {
   let query = db.select().from(profiles);
   const conditions = [];
   
-  if (filters?.city) conditions.push(eq(profiles.city, filters.city));
+  if (filters?.city) conditions.push(like(profiles.city, `%${filters.city}%`));
   if (filters?.region) conditions.push(like(profiles.region, `%${filters.region}%`));
   if (filters?.isActive !== undefined) conditions.push(eq(profiles.isActive, filters.isActive));
   if (filters?.isFeatured !== undefined) conditions.push(eq(profiles.isFeatured, filters.isFeatured));
@@ -132,11 +140,37 @@ export async function getAllProfiles(filters?: {
     );
   }
   
+  // Filtros de idade
+  if (filters?.ageMin !== undefined) conditions.push(gte(profiles.age, filters.ageMin));
+  if (filters?.ageMax !== undefined) conditions.push(lte(profiles.age, filters.ageMax));
+  
+  // Filtros de altura (convertendo cm para metros)
+  if (filters?.heightMin !== undefined) conditions.push(gte(profiles.height, String(filters.heightMin / 100)));
+  if (filters?.heightMax !== undefined) conditions.push(lte(profiles.height, String(filters.heightMax / 100)));
+  
+  // Filtros de peso
+  if (filters?.weightMin !== undefined) conditions.push(gte(profiles.weight, filters.weightMin));
+  if (filters?.weightMax !== undefined) conditions.push(lte(profiles.weight, filters.weightMax));
+  
   if (conditions.length > 0) {
     query = query.where(and(...conditions)!) as any;
   }
   
-  return await query.orderBy(desc(profiles.createdAt));
+  let results = await query.orderBy(desc(profiles.createdAt));
+  
+  // Filtrar por categorias se fornecido
+  if (filters?.categoryIds && filters.categoryIds.length > 0) {
+    const profilesWithCategories = await Promise.all(
+      results.map(async (profile) => {
+        const categories = await getProfileCategories(profile.id);
+        const hasCategory = categories.some(cat => filters.categoryIds!.includes(cat.id));
+        return hasCategory ? profile : null;
+      })
+    );
+    results = profilesWithCategories.filter(p => p !== null) as typeof results;
+  }
+  
+  return results;
 }
 
 export async function updateProfile(id: number, data: Partial<InsertProfile>) {
@@ -354,4 +388,52 @@ export async function updateProfileRating(profileId: number) {
     rating: avgRating,
     ratingCount: approvedComments.length
   }).where(eq(profiles.id, profileId));
+}
+
+// ===== TESTIMONIALS =====
+export async function createTestimonial(data: InsertTestimonial) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.insert(testimonials).values(data);
+}
+
+export async function getAllTestimonials(filters?: {
+  profileId?: number;
+  isVerified?: boolean;
+  isFeatured?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db.select().from(testimonials);
+  const conditions = [];
+  
+  if (filters?.profileId !== undefined) conditions.push(eq(testimonials.profileId, filters.profileId));
+  if (filters?.isVerified !== undefined) conditions.push(eq(testimonials.isVerified, filters.isVerified));
+  if (filters?.isFeatured !== undefined) conditions.push(eq(testimonials.isFeatured, filters.isFeatured));
+  
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)!) as any;
+  }
+  
+  return await query.orderBy(desc(testimonials.createdAt));
+}
+
+export async function getTestimonialById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(testimonials).where(eq(testimonials.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateTestimonial(id: number, data: Partial<InsertTestimonial>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.update(testimonials).set(data).where(eq(testimonials.id, id));
+}
+
+export async function deleteTestimonial(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.delete(testimonials).where(eq(testimonials.id, id));
 }
