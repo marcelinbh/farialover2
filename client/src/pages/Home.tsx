@@ -108,12 +108,12 @@ export default function Home() {
 
       {/* Hero Carousel */}
       <section className="relative h-[650px] overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-black">
           <img
             key={heroIndex}
             src={heroPhoto}
             alt={heroProfile?.name}
-            className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+            className="w-full h-full object-contain transition-opacity duration-700 ease-in-out"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
         </div>

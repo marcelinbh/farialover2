@@ -63,3 +63,9 @@
 - [x] Adicionar animação de fade entre fotos
 - [x] Garantir que fotos do banner sejam horizontais com object-cover
 - [x] Ajustar fotos dentro do perfil para formato correto
+
+## Correção de Proporção das Fotos no Banner
+- [x] Mudar object-cover para object-contain no banner
+- [x] Garantir que foto da modelo apareça COMPLETA (corpo inteiro)
+- [x] Centralizar foto da modelo no banner
+- [x] Adicionar fundo escuro para preencher espaços vazios
