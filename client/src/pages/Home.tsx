@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import Header from "@/components/Header";
 import ProfileCard from "@/components/ProfileCard";
-import FilterSidebar, { FilterValues } from "@/components/FilterSidebar";
+
 import AdvancedFilters, { FilterValues as AdvancedFilterValues } from "@/components/AdvancedFilters";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StoryViewer from "@/components/StoryViewer";
@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
-  const [filters, setFilters] = useState<Partial<FilterValues>>({});
+
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilterValues>({});
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [storyInitialIndex, setStoryInitialIndex] = useState(0);
@@ -28,11 +27,8 @@ export default function Home() {
   // Perfis para Stories (primeiros 20)
   const storyProfiles = profiles.slice(0, 20);
 
-  const { data: featuredProfiles = [] } = trpc.profiles.list.useQuery({
-    isFeatured: true,
-  });
-
-  const { data: categories = [] } = trpc.categories.list.useQuery();
+  // Usar os primeiros 5 perfis como featured (banner principal)
+  const featuredProfiles = profiles.slice(0, 5);
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -48,15 +44,7 @@ export default function Home() {
     }
   };
 
-  // Função para obter categorias de um perfil
-  const getProfileCategories = (profileId: number) => {
-    // TODO: Implementar query para buscar categorias do perfil
-    return [];
-  };
 
-  const handleApplyFilters = (newFilters: FilterValues) => {
-    setFilters(newFilters);
-  };
   
   const handleApplyAdvancedFilters = (newFilters: AdvancedFilterValues) => {
     setAdvancedFilters(newFilters);
@@ -199,11 +187,11 @@ export default function Home() {
           <div className="container">
             <h2 className="text-3xl font-bold mb-6 gradient-text">VIP'S</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {profiles.filter(p => p.isVip).map((profile) => (
+              {profiles.filter(p => p.is_premium).map((profile) => (
                 <ProfileCard
                   key={profile.id}
                   profile={profile}
-                  categories={getProfileCategories(profile.id)}
+                  categories={[]}
                 />
               ))}
             </div>
@@ -239,7 +227,7 @@ export default function Home() {
                 <ProfileCard
                   key={profile.id}
                   profile={profile}
-                  categories={getProfileCategories(profile.id)}
+                  categories={[]}
                 />
               ))}
             </div>
@@ -247,13 +235,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FilterSidebar */}
-      <FilterSidebar
-        isOpen={filterSidebarOpen}
-        onClose={() => setFilterSidebarOpen(false)}
-        onApplyFilters={handleApplyFilters}
-        categories={categories}
-      />
+
 
       {/* Footer */}
       <footer className="bg-card py-8 border-t border-border">

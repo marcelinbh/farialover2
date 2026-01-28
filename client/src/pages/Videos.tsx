@@ -5,7 +5,7 @@ import { Link } from "wouter";
 
 export default function Videos() {
   const { data: videos = [], isLoading } = trpc.videos.list.useQuery();
-  const { data: profiles = [] } = trpc.profiles.list.useQuery();
+  const { data: profiles = [] } = trpc.profiles.search.useQuery({});
 
   const getProfileById = (id: number) => {
     return profiles.find(p => p.id === id);

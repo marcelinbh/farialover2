@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     enabled: isAuthenticated && user?.role === 'admin' 
   });
   
-  const { data: profiles = [] } = trpc.profiles.list.useQuery({}, { 
+  const { data: profiles = [] } = trpc.profiles.search.useQuery({}, { 
     enabled: isAuthenticated && user?.role === 'admin' 
   });
   
