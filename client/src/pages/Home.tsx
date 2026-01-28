@@ -19,18 +19,11 @@ export default function Home() {
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [storyInitialIndex, setStoryInitialIndex] = useState(0);
   
-  // Buscar perfis no Supabase com filtros avançados
-  const { data: supabaseProfiles = [], isLoading: isLoadingSupabase } = trpc.profiles.search.useQuery(advancedFilters);
-  
-  // Buscar perfis no MySQL (fallback)
-  const { data: mysqlProfiles = [], isLoading } = trpc.profiles.list.useQuery({
-    search: searchTerm || undefined,
-    ...filters,
+  // Buscar perfis no Supabase (fonte única de dados)
+  const { data: profiles = [], isLoading } = trpc.profiles.search.useQuery({
+    ...advancedFilters,
+    name: searchTerm || undefined,
   });
-  
-  // Usar perfis do Supabase se houver filtros avançados, senão usar MySQL
-  const hasAdvancedFilters = Object.keys(advancedFilters).length > 0;
-  const profiles = hasAdvancedFilters ? supabaseProfiles : mysqlProfiles;
 
   // Perfis para Stories (primeiros 20)
   const storyProfiles = profiles.slice(0, 20);
