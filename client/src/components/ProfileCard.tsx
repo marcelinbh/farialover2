@@ -25,7 +25,7 @@ export default function ProfileCard({ profile, categories = [] }: ProfileCardPro
     <div className="profile-card">
       <Link href={`/perfil/${profile.id}`} className="block relative aspect-[3/4] overflow-hidden">
         <img
-          src={profile.photoUrl || '/placeholder-profile.jpg'}
+          src={(profile as any).avatar_url || profile.photoUrl || '/placeholder-profile.jpg'}
           alt={profile.name}
           className="w-full h-full object-cover"
         />

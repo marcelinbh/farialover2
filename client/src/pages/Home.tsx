@@ -73,7 +73,7 @@ export default function Home() {
               }`}
             >
               <img
-                src={profile.photoUrl || '/placeholder-profile.jpg'}
+                src={(profile as any).avatar_url || (profile as any).photoUrl || '/placeholder-profile.jpg'}
                 alt={profile.name}
                 className="w-full h-full object-cover"
               />
@@ -137,7 +137,7 @@ export default function Home() {
                 className="story-item"
               >
                 <img
-                  src={profile.photoUrl || '/placeholder-profile.jpg'}
+                  src={(profile as any).avatar_url || (profile as any).photoUrl || '/placeholder-profile.jpg'}
                   alt={profile.name}
                 />
               </button>
@@ -153,9 +153,9 @@ export default function Home() {
             id: profile.id,
             profileId: profile.id,
             profileName: profile.name,
-            profilePhoto: profile.photoUrl || '/placeholder-profile.jpg',
+            profilePhoto: (profile as any).avatar_url || '/placeholder-profile.jpg',
             profilePhone: profile.phone,
-            images: [profile.photoUrl || '/placeholder-profile.jpg'], // Foto principal, fotos adicionais serão carregadas no StoryViewer
+            images: [(profile as any).avatar_url || '/placeholder-profile.jpg'], // Foto principal, fotos adicionais serão carregadas no StoryViewer
           }))}
           initialIndex={storyInitialIndex}
           onClose={() => setStoryViewerOpen(false)}
