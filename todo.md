@@ -33,3 +33,13 @@
 - [x] Testar integração com Supabase
 - [x] Validar responsividade em diferentes dispositivos
 - [x] Verificar performance de carregamento de imagens
+
+## Ajustes Solicitados pelo Usuário
+- [x] Reduzir altura do banner hero para proporção do Agenda31
+- [x] Criar páginas de perfil individual clicáveis
+- [x] Implementar galeria completa de fotos em cada perfil
+- [x] Adicionar navegação funcional entre perfis
+- [x] Implementar sistema de rotas com wouter
+- [x] Tornar todos os cards clicáveis
+- [x] Adicionar botões de navegação anterior/próximo nos perfis
+- [x] Replicar exatamente as proporções e espaçamentos do Agenda31

@@ -93,7 +93,7 @@ export default function Home() {
       </header>
 
       {/* Hero Carousel */}
-      <section className="relative h-[600px] overflow-hidden">
+      <section className="relative h-[500px] overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={heroPhoto}
@@ -172,7 +172,11 @@ export default function Home() {
           <div className="relative">
             <div className="flex items-center justify-center space-x-6 overflow-hidden">
               {visibleStories.map((profile) => (
-                <div key={profile.id} className="flex flex-col items-center cursor-pointer group">
+                <div
+                  key={profile.id}
+                  onClick={() => window.location.href = `/perfil/${profile.id}`}
+                  className="flex flex-col items-center cursor-pointer group"
+                >
                   <div className="w-24 h-24 rounded-full border-4 border-primary p-1 mb-2 group-hover:border-secondary transition-colors">
                     <img
                       src={profile.photos[0]?.url || ""}
@@ -217,6 +221,7 @@ export default function Home() {
             {profiles.map((profile) => (
               <Card
                 key={profile.id}
+                onClick={() => window.location.href = `/perfil/${profile.id}`}
                 className="bg-card border-2 border-primary hover:border-secondary transition-all duration-300 overflow-hidden cursor-pointer group hover:-translate-y-2"
               >
                 <div className="relative aspect-[3/4]">
@@ -253,6 +258,7 @@ export default function Home() {
             {profiles.map((profile) => (
               <Card
                 key={profile.id}
+                onClick={() => window.location.href = `/perfil/${profile.id}`}
                 className="bg-card border border-border hover:border-primary transition-all duration-300 overflow-hidden group cursor-pointer"
               >
                 <div className="relative aspect-[3/4]">
