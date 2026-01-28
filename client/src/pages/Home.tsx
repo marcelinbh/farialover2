@@ -108,7 +108,10 @@ export default function Home() {
 
       {/* Hero Carousel */}
       <section className="relative h-[650px] overflow-hidden">
-        <div className="absolute inset-0 bg-black">
+        <div 
+          className="absolute inset-0 bg-black cursor-pointer"
+          onClick={() => setLocation(`/perfil/${heroProfile?.id}`)}
+        >
           <img
             key={heroIndex}
             src={heroPhoto}
@@ -119,7 +122,7 @@ export default function Home() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative h-full container mx-auto px-4 flex items-start pt-24">
+        <div className="relative h-full container mx-auto px-4 flex items-start pt-24 pointer-events-none">
           <div className="w-[280px] bg-black/75 backdrop-blur-md p-5 rounded-md">
             {/* Tag de Destaque */}
             {heroProfile?.highlight_tag && (
@@ -164,14 +167,20 @@ export default function Home() {
 
         {/* Navigation Arrows */}
         <button
-          onClick={() => setHeroIndex((prev) => (prev - 1 + (profiles?.length || 1)) % (profiles?.length || 1))}
-          className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            setHeroIndex((prev) => (prev - 1 + (profiles?.length || 1)) % (profiles?.length || 1));
+          }}
+          className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm pointer-events-auto"
         >
           <ChevronLeft size={28} />
         </button>
         <button
-          onClick={() => setHeroIndex((prev) => (prev + 1) % (profiles?.length || 1))}
-          className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            setHeroIndex((prev) => (prev + 1) % (profiles?.length || 1));
+          }}
+          className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm pointer-events-auto"
         >
           <ChevronRight size={28} />
         </button>

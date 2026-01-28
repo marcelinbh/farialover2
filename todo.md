@@ -74,3 +74,16 @@
 - [x] Mudar object-cover para object-contain na galeria de fotos do perfil
 - [x] Garantir que fotos mostrem corpo inteiro da modelo
 - [x] Adicionar fundo preto para preencher espaços vazios
+
+## Replicar Página de Perfil EXATAMENTE como Agenda31
+- [x] Analisar estrutura completa da página de perfil do Agenda31
+- [x] Replicar layout exato da galeria de fotos
+- [x] Replicar seção de informações e detalhes
+- [x] Replicar sidebar fixa com foto, nome, avaliação, telefone
+- [x] Replicar todos os botões e funcionalidades
+- [x] Garantir layout idêntico ao original
+
+## Tornar Banner Clicável
+- [x] Adicionar link no banner hero para perfil da modelo
+- [x] Tornar toda área do banner clicável
+- [x] Manter funcionalidade das setas de navegação com stopPropagation
