@@ -42,8 +42,24 @@ export type Photo = {
   created_at: string;
 };
 
+export type Video = {
+  url: string;
+  thumbnail: string;
+  title: string;
+};
+
+export type Comment = {
+  id: string;
+  profile_id: number;
+  author_name: string;
+  comment_text: string;
+  created_at: string;
+  approved: boolean;
+};
+
 export type ProfileWithPhotos = Profile & {
   photos: Photo[];
+  videos?: Video[];
 };
 
 export async function getAllProfiles(): Promise<ProfileWithPhotos[]> {
@@ -77,4 +93,44 @@ export async function getAllProfiles(): Promise<ProfileWithPhotos[]> {
   }));
 
   return profilesWithPhotos;
+}
+
+export async function getCommentsByProfile(profileId: number): Promise<Comment[]> {
+  const { data: comments, error } = await supabase
+    .from('comments')
+    .select('*')
+    .eq('profile_id', profileId)
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching comments:', error);
+    throw error;
+  }
+
+  return comments || [];
+}
+
+export async function createComment(
+  profileId: number,
+  authorName: string,
+  commentText: string
+): Promise<Comment> {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert({
+      profile_id: profileId,
+      author_name: authorName,
+      comment_text: commentText,
+      approved: false, // Comentários precisam ser aprovados
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating comment:', error);
+    throw error;
+  }
+
+  return data;
 }

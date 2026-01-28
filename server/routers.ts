@@ -23,6 +23,40 @@ export const appRouter = router({
       return getAllProfiles();
     }),
   }),
+
+  comments: router({
+    list: publicProcedure
+      .input((val: unknown) => {
+        if (typeof val === 'object' && val !== null && 'profileId' in val && typeof (val as any).profileId === 'number') {
+          return val as { profileId: number };
+        }
+        throw new Error('Invalid input: profileId must be a number');
+      })
+      .query(async ({ input }) => {
+        const { getCommentsByProfile } = await import('./supabase');
+        return getCommentsByProfile(input.profileId);
+      }),
+    create: publicProcedure
+      .input((val: unknown) => {
+        if (
+          typeof val === 'object' &&
+          val !== null &&
+          'profileId' in val &&
+          'authorName' in val &&
+          'commentText' in val &&
+          typeof (val as any).profileId === 'number' &&
+          typeof (val as any).authorName === 'string' &&
+          typeof (val as any).commentText === 'string'
+        ) {
+          return val as { profileId: number; authorName: string; commentText: string };
+        }
+        throw new Error('Invalid input: profileId, authorName, and commentText are required');
+      })
+      .mutation(async ({ input }) => {
+        const { createComment } = await import('./supabase');
+        return createComment(input.profileId, input.authorName, input.commentText);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

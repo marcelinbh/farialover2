@@ -1,8 +1,12 @@
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Star, MapPin } from "lucide-react";
 import { useState } from "react";
 import { useRoute, useLocation } from "wouter";
+import { toast } from "sonner";
 
 export default function Profile() {
   const [, params] = useRoute("/perfil/:id");
@@ -10,7 +14,27 @@ export default function Profile() {
   const profileId = params?.id ? parseInt(params.id) : null;
 
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
+  const { data: comments, isLoading: commentsLoading } = trpc.comments.list.useQuery(
+    { profileId: profileId || 0 },
+    { enabled: !!profileId }
+  );
+  
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [authorName, setAuthorName] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+
+  const createCommentMutation = trpc.comments.create.useMutation({
+    onSuccess: () => {
+      toast.success("Comentário enviado! Aguardando aprovação.");
+      setAuthorName("");
+      setCommentText("");
+    },
+    onError: (error) => {
+      toast.error("Erro ao enviar comentário: " + error.message);
+    },
+  });
 
   if (isLoading) {
     return (
@@ -47,6 +71,19 @@ export default function Profile() {
   const goToNext = () => {
     const nextIndex = (currentIndex + 1) % profiles.length;
     setLocation(`/perfil/${profiles[nextIndex].id}`);
+  };
+
+  const handleSubmitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authorName.trim() || !commentText.trim()) {
+      toast.error("Por favor, preencha todos os campos.");
+      return;
+    }
+    createCommentMutation.mutate({
+      profileId: profile.id,
+      authorName: authorName.trim(),
+      commentText: commentText.trim(),
+    });
   };
 
   return (
@@ -270,6 +307,18 @@ export default function Profile() {
               </div>
             )}
 
+            {/* Botão VÍDEOS */}
+            {profile.videos && profile.videos.length > 0 && (
+              <div className="mb-6">
+                <Button
+                  onClick={() => setShowVideoModal(true)}
+                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 text-sm"
+                >
+                  VÍDEOS
+                </Button>
+              </div>
+            )}
+
             {/* MEU CACHÊ */}
             {profile.price_per_hour && (
               <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
@@ -313,7 +362,7 @@ export default function Profile() {
             )}
 
             {/* Localização */}
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
               <h3 className="text-white font-bold text-sm mb-4 uppercase">LOCALIZAÇÃO</h3>
               <div className="space-y-2 text-sm text-gray-400">
                 <p>
@@ -326,9 +375,126 @@ export default function Profile() {
                 )}
               </div>
             </div>
+
+            {/* MEUS ELOGIOS */}
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+              <h3 className="text-white font-bold text-lg mb-4 uppercase">MEUS ELOGIOS</h3>
+              
+              {/* Texto Introdutório */}
+              <div className="mb-6 text-sm text-gray-400 space-y-2">
+                <p>
+                  <span className="font-bold text-white">SRS. USUÁRIOS</span> - Este espaço é reservado SOMENTE para que você escreva o seu elogio ou simplesmente dê seu depoimento (elogioso) sobre algum encontro em que você teve com alguma das anunciantes do FARIALOVER. Para isso basta preencher o formulário a seguir e em seguida clicar em PUBLICAR.
+                </p>
+                <p>
+                  <span className="font-bold text-red-500">ATENÇÃO</span> - Este NÃO É um canal de comunicação com as GAROTAS DE PROGRAMA do site uma vez que elas NÃO RESPONDERÃO para você. O seu contato com elas deverá ser realizado SOMENTE através dos telefones indicados nos anúncios das anunciantes. Neste espaço somente admitiremos os comentários elogiosos a elas que, após serem avaliados, poderão ser ou não publicados (críticas serão descartadas).
+                </p>
+              </div>
+
+              {/* Formulário de Comentário */}
+              <form onSubmit={handleSubmitComment} className="mb-6 space-y-4">
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Seu nome"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    className="bg-black border-gray-700 text-white placeholder:text-gray-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <Textarea
+                    placeholder="Escreva seu elogio aqui..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="bg-black border-gray-700 text-white placeholder:text-gray-500 min-h-[100px]"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={createCommentMutation.isPending}
+                  className="w-full bg-primary hover:bg-primary/80 text-black font-bold py-3"
+                >
+                  {createCommentMutation.isPending ? "ENVIANDO..." : "PUBLICAR"}
+                </Button>
+              </form>
+
+              {/* Lista de Comentários */}
+              <div className="space-y-4">
+                {commentsLoading ? (
+                  <p className="text-gray-400 text-sm">Carregando comentários...</p>
+                ) : comments && comments.length > 0 ? (
+                  comments.map((comment) => (
+                    <div key={comment.id} className="border-t border-gray-800 pt-4">
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <span className="font-bold text-white">{comment.author_name}</span>
+                        <span className="text-gray-500 text-xs">
+                          {new Date(comment.created_at).toLocaleDateString('pt-BR')}
+                        </span>
+                      </div>
+                      <p className="text-gray-300 text-sm">{comment.comment_text}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">Nenhum comentário ainda. Seja o primeiro a elogiar!</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de Vídeos */}
+      {showVideoModal && profile.videos && profile.videos.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <div
+            className="bg-gray-900 rounded-lg p-6 max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-bold text-lg">VÍDEOS - {profile.name}</h3>
+              <button
+                onClick={() => setShowVideoModal(false)}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="aspect-video bg-black rounded-lg overflow-hidden mb-4">
+              <iframe
+                src={profile.videos[selectedVideoIndex].url}
+                title={profile.videos[selectedVideoIndex].title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            {profile.videos.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {profile.videos.map((video, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setSelectedVideoIndex(index)}
+                    className={`aspect-video cursor-pointer rounded overflow-hidden ${
+                      index === selectedVideoIndex ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={video.thumbnail}
+                      alt={video.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

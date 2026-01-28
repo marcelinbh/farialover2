@@ -87,3 +87,19 @@
 - [x] Adicionar link no banner hero para perfil da modelo
 - [x] Tornar toda área do banner clicável
 - [x] Manter funcionalidade das setas de navegação com stopPropagation
+
+## Implementar Seção de Vídeos
+- [x] Analisar seção de vídeos no Agenda31
+- [x] Adicionar campo de vídeos no schema do Supabase
+- [x] Criar componente de player de vídeo com modal
+- [x] Adicionar seção de vídeos na página de perfil
+- [x] Implementar grid de thumbnails de vídeos
+- [x] Garantir que seja idêntico ao Agenda31
+
+## Implementar Sistema de Comentários/Elogios
+- [x] Analisar seção de comentários no Agenda31
+- [x] Criar tabela de comentários no Supabase
+- [x] Criar formulário de envio de comentários
+- [x] Implementar listagem de comentários com nome, data e texto
+- [x] Adicionar validação e moderação (approved flag)
+- [x] Garantir layout idêntico ao Agenda31
