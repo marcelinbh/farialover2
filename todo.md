@@ -188,3 +188,19 @@
 - [x] Implementar componente de Filtros Avançados
 - [x] Conectar filtros com busca no Supabase
 - [x] Testar filtros (nome, idade, cidade, características)
+
+## Perfis Completos e Detalhados
+- [ ] Criar perfis completos de modelos com descrições/bio detalhadas
+- [ ] Adicionar informações físicas completas (cabelo, olhos, corpo, seios, tatuagem, piercing)
+- [ ] Adicionar serviços oferecidos por cada modelo
+- [ ] Adicionar preços (por hora, pernoite, etc)
+- [ ] Adicionar múltiplas fotos de alta qualidade para cada perfil
+- [ ] Testar página de detalhes dos perfis com todas as informações
+
+## Atualização 28/01/2026
+- [x] Criar perfis completos de modelos com descrições/bio detalhadas
+- [x] Adicionar informações físicas completas (cabelo, olhos, corpo, seios, tatuagem, piercing)
+- [x] Adicionar serviços oferecidos por cada modelo
+- [x] Adicionar preços (por hora, pernoite, etc)
+- [x] Fotos já existem no banco (64 fotos - 8 por perfil)
+- [ ] Testar página de detalhes dos perfis com todas as informações
