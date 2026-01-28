@@ -118,3 +118,8 @@
 - [x] Gerar nova logo com fundo transparente (sem branco)
 - [x] Aumentar tamanho da logo no header (h-20 na Home, h-16 no Profile)
 - [x] Testar logo corrigida em todas as páginas
+
+## Remover Fundo Preto da Logo Original
+- [x] Processar logo original (Opção 1) para remover fundo preto
+- [x] Deixar apenas texto rosa/vermelho e coração em fundo transparente
+- [x] Aplicar logo processada no site
