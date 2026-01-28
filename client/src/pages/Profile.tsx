@@ -95,7 +95,7 @@ export default function Profile() {
             <img 
               src="/logo.png" 
               alt="Farialover" 
-              className="h-10 cursor-pointer" 
+              className="h-16 cursor-pointer" 
               onClick={() => setLocation("/")} 
             />
 

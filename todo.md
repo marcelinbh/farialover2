@@ -113,3 +113,8 @@
 - [x] Aplicar nova logo no header de todas as páginas
 - [x] Atualizar favicon com nova logo
 - [x] Testar contraste e legibilidade das novas cores
+
+## Correção da Logo
+- [x] Gerar nova logo com fundo transparente (sem branco)
+- [x] Aumentar tamanho da logo no header (h-20 na Home, h-16 no Profile)
+- [x] Testar logo corrigida em todas as páginas
