@@ -3,11 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Share2, Star } from "lucide-react";
 import { useState } from "react";
+import StoryModal from "@/components/StoryModal";
+import { useLocation } from "wouter";
 
 export default function Home() {
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
   const [heroIndex, setHeroIndex] = useState(0);
   const [storiesStart, setStoriesStart] = useState(0);
+  const [storyModalOpen, setStoryModalOpen] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [, setLocation] = useLocation();
 
   if (isLoading) {
     return (
@@ -93,19 +98,20 @@ export default function Home() {
       </header>
 
       {/* Hero Carousel */}
-      <section className="relative h-[500px] overflow-hidden">
+      <section className="relative h-[550px] overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={heroPhoto}
             alt={heroProfile?.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
+            style={{ objectPosition: 'center 30%' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative h-full container mx-auto px-4 flex items-end pb-12">
-          <div className="max-w-md">
+        <div className="relative h-full container mx-auto px-4 flex items-center">
+          <div className="max-w-md bg-black/60 backdrop-blur-sm p-6 rounded-lg">
             {/* Tag de Destaque */}
             {heroProfile?.highlight_tag && (
               <div className="inline-block mb-4">
@@ -174,7 +180,11 @@ export default function Home() {
               {visibleStories.map((profile) => (
                 <div
                   key={profile.id}
-                  onClick={() => window.location.href = `/perfil/${profile.id}`}
+                  onClick={() => {
+                    const index = profiles.findIndex(p => p.id === profile.id);
+                    setSelectedStoryIndex(index);
+                    setStoryModalOpen(true);
+                  }}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div className="w-24 h-24 rounded-full border-4 border-primary p-1 mb-2 group-hover:border-secondary transition-colors">
@@ -224,11 +234,11 @@ export default function Home() {
                 onClick={() => window.location.href = `/perfil/${profile.id}`}
                 className="bg-card border-2 border-primary hover:border-secondary transition-all duration-300 overflow-hidden cursor-pointer group hover:-translate-y-2"
               >
-                <div className="relative aspect-[3/4]">
+                <div className="relative aspect-[2/3]">
                   <img
                     src={profile.photos[0]?.url || ""}
                     alt={profile.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                   />
                   {profile.highlight_tag && (
                     <div className="absolute top-2 left-2">
@@ -261,7 +271,7 @@ export default function Home() {
                 onClick={() => window.location.href = `/perfil/${profile.id}`}
                 className="bg-card border border-border hover:border-primary transition-all duration-300 overflow-hidden group cursor-pointer"
               >
-                <div className="relative aspect-[3/4]">
+                <div className="relative aspect-[2/3]">
                   <img
                     src={profile.photos[0]?.url || ""}
                     alt={profile.name}
@@ -316,6 +326,24 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Story Modal */}
+      {storyModalOpen && profiles && profiles.length > 0 && (
+        <StoryModal
+          profile={profiles[selectedStoryIndex]}
+          onClose={() => setStoryModalOpen(false)}
+          onPrevious={() => {
+            setSelectedStoryIndex((prev) => (prev - 1 + profiles.length) % profiles.length);
+          }}
+          onNext={() => {
+            setSelectedStoryIndex((prev) => (prev + 1) % profiles.length);
+          }}
+          onViewProfile={() => {
+            setStoryModalOpen(false);
+            setLocation(`/perfil/${profiles[selectedStoryIndex].id}`);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -43,3 +43,10 @@
 - [x] Tornar todos os cards clicáveis
 - [x] Adicionar botões de navegação anterior/próximo nos perfis
 - [x] Replicar exatamente as proporções e espaçamentos do Agenda31
+
+## Correções Urgentes Solicitadas
+- [x] Corrigir banner hero para layout IDÊENTICO ao Agenda31 (foto horizontal + info sobreposta em card)
+- [x] Implementar stories 100% funcionais exatamente como no vídeo
+- [x] Ajustar aspect ratio das fotos para mostrar corpo inteiro (não cortar)
+- [x] Replicar formato exato das fotos do Agenda31 (aspect ratio 2:3)
+- [x] Garantir que stories sejam clicáveis e abram modal fullscreen
