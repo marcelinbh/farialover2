@@ -103,3 +103,13 @@
 - [x] Implementar listagem de comentários com nome, data e texto
 - [x] Adicionar validação e moderação (approved flag)
 - [x] Garantir layout idêntico ao Agenda31
+
+## Alterar Identidade Visual
+- [x] Gerar 3 opções de logo diferentes para escolha
+- [x] Atualizar paleta de cores para rosa, vermelho e preto no index.css
+- [x] Substituir cores verde neon (#00FF14) por rosa
+- [x] Substituir cores dourado (#FFD700) por vermelho
+- [x] Manter preto (#000000) como cor de fundo
+- [x] Aplicar nova logo no header de todas as páginas
+- [x] Atualizar favicon com nova logo
+- [x] Testar contraste e legibilidade das novas cores

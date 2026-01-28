@@ -72,10 +72,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <h1 className="text-3xl font-bold">
-                <span className="text-primary">faria</span>
-                <span className="text-secondary">lover</span>
-              </h1>
+              <img src="/logo.png" alt="Farialover" className="h-12" />
             </div>
 
             {/* Navigation */}

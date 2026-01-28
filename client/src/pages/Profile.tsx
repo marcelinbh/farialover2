@@ -92,10 +92,12 @@ export default function Profile() {
       <header className="sticky top-0 z-50 bg-black border-b border-gray-800">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold cursor-pointer" onClick={() => setLocation("/")}>
-              <span className="text-primary">faria</span>
-              <span className="text-secondary">lover</span>
-            </h1>
+            <img 
+              src="/logo.png" 
+              alt="Farialover" 
+              className="h-10 cursor-pointer" 
+              onClick={() => setLocation("/")} 
+            />
 
             <nav className="hidden lg:flex items-center space-x-6">
               <a href="/" className="text-white hover:text-primary transition-colors text-sm font-medium">HOME</a>
