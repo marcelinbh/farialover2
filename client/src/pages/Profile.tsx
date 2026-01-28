@@ -214,11 +214,11 @@ export default function Profile() {
           {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Featured Photo */}
-            <div className="relative mb-8 aspect-[4/3] overflow-hidden rounded-lg">
+            <div className="relative mb-8 aspect-[4/3] overflow-hidden rounded-lg bg-black">
               <img
                 src={profile.photos[selectedPhotoIndex]?.url || profile.photos[0]?.url}
                 alt={profile.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {profile.photos.length > 1 && (
                 <>
@@ -246,7 +246,7 @@ export default function Profile() {
                   <div
                     key={photo.id}
                     onClick={() => setSelectedPhotoIndex(index)}
-                    className={`aspect-[2/3] overflow-hidden rounded-lg cursor-pointer transition-all ${
+                    className={`aspect-[2/3] overflow-hidden rounded-lg cursor-pointer transition-all bg-black ${
                       index === selectedPhotoIndex
                         ? "ring-4 ring-primary"
                         : "hover:ring-2 hover:ring-secondary"
@@ -255,7 +255,7 @@ export default function Profile() {
                     <img
                       src={photo.url}
                       alt={`${profile.name} - Foto ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 ))}

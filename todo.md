@@ -69,3 +69,8 @@
 - [x] Garantir que foto da modelo apareça COMPLETA (corpo inteiro)
 - [x] Centralizar foto da modelo no banner
 - [x] Adicionar fundo escuro para preencher espaços vazios
+
+## Correção de Fotos na Página de Perfil Individual
+- [x] Mudar object-cover para object-contain na galeria de fotos do perfil
+- [x] Garantir que fotos mostrem corpo inteiro da modelo
+- [x] Adicionar fundo preto para preencher espaços vazios
