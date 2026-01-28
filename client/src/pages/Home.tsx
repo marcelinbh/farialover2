@@ -2,13 +2,22 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Share2, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StoryModal from "@/components/StoryModal";
 import { useLocation } from "wouter";
 
 export default function Home() {
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
   const [heroIndex, setHeroIndex] = useState(0);
+
+  // Auto-advance carousel every 5 seconds
+  useEffect(() => {
+    if (!profiles || profiles.length === 0) return;
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % profiles.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [profiles]);
   const [storiesStart, setStoriesStart] = useState(0);
   const [storyModalOpen, setStoryModalOpen] = useState(false);
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
@@ -98,20 +107,20 @@ export default function Home() {
       </header>
 
       {/* Hero Carousel */}
-      <section className="relative h-[550px] overflow-hidden">
+      <section className="relative h-[650px] overflow-hidden">
         <div className="absolute inset-0">
           <img
+            key={heroIndex}
             src={heroPhoto}
             alt={heroProfile?.name}
-            className="w-full h-full object-cover object-center"
-            style={{ objectPosition: 'center 30%' }}
+            className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative h-full container mx-auto px-4 flex items-center">
-          <div className="max-w-md bg-black/60 backdrop-blur-sm p-6 rounded-lg">
+        <div className="relative h-full container mx-auto px-4 flex items-start pt-24">
+          <div className="w-[280px] bg-black/75 backdrop-blur-md p-5 rounded-md">
             {/* Tag de Destaque */}
             {heroProfile?.highlight_tag && (
               <div className="inline-block mb-4">
@@ -155,16 +164,16 @@ export default function Home() {
 
         {/* Navigation Arrows */}
         <button
-          onClick={prevHero}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+          onClick={() => setHeroIndex((prev) => (prev - 1 + (profiles?.length || 1)) % (profiles?.length || 1))}
+          className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm"
         >
-          <ChevronLeft size={32} />
+          <ChevronLeft size={28} />
         </button>
         <button
-          onClick={nextHero}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+          onClick={() => setHeroIndex((prev) => (prev + 1) % (profiles?.length || 1))}
+          className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all z-10 backdrop-blur-sm"
         >
-          <ChevronRight size={32} />
+          <ChevronRight size={28} />
         </button>
       </section>
 

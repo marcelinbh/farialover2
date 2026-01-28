@@ -50,3 +50,16 @@
 - [x] Ajustar aspect ratio das fotos para mostrar corpo inteiro (não cortar)
 - [x] Replicar formato exato das fotos do Agenda31 (aspect ratio 2:3)
 - [x] Garantir que stories sejam clicáveis e abram modal fullscreen
+
+## Correção do Banner Hero
+- [x] Ajustar banner para mostrar foto COMPLETA da modelo (não cortada)
+- [x] Posicionar card de informações no canto superior esquerdo como no Agenda31
+- [x] Remover object-position que está cortando a foto
+- [x] Ajustar altura do banner se necessário para mostrar pose completa
+
+## Implementar Carrossel no Banner
+- [x] Adicionar transição automática entre perfis no banner (autoplay a cada 5s)
+- [x] Implementar setas de navegação funcionais (anterior/próximo)
+- [x] Adicionar animação de fade entre fotos
+- [x] Garantir que fotos do banner sejam horizontais com object-cover
+- [x] Ajustar fotos dentro do perfil para formato correto
