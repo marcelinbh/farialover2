@@ -17,12 +17,12 @@ export const appRouter = router({
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  profiles: router({
+    list: publicProcedure.query(async () => {
+      const { getAllProfiles } = await import('./supabase');
+      return getAllProfiles();
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

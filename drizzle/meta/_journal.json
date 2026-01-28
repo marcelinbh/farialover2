@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1769614832122,
+      "tag": "0000_cloudy_ser_duncan",
+      "breakpoints": true
+    }
+  ]
 }
