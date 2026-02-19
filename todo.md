@@ -123,3 +123,9 @@
 - [x] Processar logo original (Opção 1) para remover fundo preto
 - [x] Deixar apenas texto rosa/vermelho e coração em fundo transparente
 - [x] Aplicar logo processada no site
+
+## Criar Nova Logo Elegante
+- [x] Gerar 3 opções de logo bonitas e modernas
+- [x] Logo deve contrastar perfeitamente com identidade visual rosa/vermelho/preto
+- [x] Aplicar logo escolhida no site via CDN
+- [x] Testar logo em todas as páginas
