@@ -72,7 +72,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <img src="https://private-us-east-1.manuscdn.com/sessionFile/F8CbeogKtuEssMGlEgx5jH/sandbox/AJrRjpTHpGIEsy8n3VJYlL_1771464522935_na1fn_ZmFyaWFsb3Zlci1sb2dvLXYx.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRjhDYmVvZ0t0dUVzc01HbEVneDVqSC9zYW5kYm94L0FKclJqcFRIcEdJRXN5OG4zVkpZbExfMTc3MTQ2NDUyMjkzNV9uYTFmbl9abUZ5YVdGc2IzWmxjaTFzYjJkdkxYWXgucG5nP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTkyMCxoXzE5MjAvZm9ybWF0LHdlYnAvcXVhbGl0eSxxXzgwIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzk4NzYxNjAwfX19XX0_&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=RjxPLirnPzPgq3Jp0Sdg-kR~KoWZYWeaqYajt4sOcQUHLDI3GdtSpxkKnRw8kOi9a2sJ6sa522f6zDWkEo7e7u2JnY2y7e3nZiSWD38d-MSQ~8HnjYV~q0qwDRDrnufRi5S4mNYMljrJFjfO3rkgnYGDTVUH058UtrJQn8uYIS4BDIz5Bp7-0PwPYfSn9tiPtFhrwC5ZW0vDDNivRdun7yS2B8v3gJ-Bfo91rzMGIlzCF1em5uw6xwSUBspokS4GqfCkWLYR~s6aD6bDdEH-raNMWUfpjVE7E0KG1UDOgs4kl6i9frpSnxdSfSyjRovDTTo5pbTNqBf7HQu3Cz4Bow__" alt="Farialover" className="h-20" />
+              <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/HlWSCrNFRUWDTqJt.png" alt="Farialover" className="h-20" />
             </div>
 
             {/* Navigation */}

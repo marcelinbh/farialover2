@@ -129,3 +129,9 @@
 - [x] Logo deve contrastar perfeitamente com identidade visual rosa/vermelho/preto
 - [x] Aplicar logo escolhida no site via CDN
 - [x] Testar logo em todas as páginas
+
+## Remover Fundo Branco da Logo Completamente
+- [x] Processar logo v1 com Python PIL para remover TODO fundo branco/cinza claro
+- [x] Garantir que apenas texto rosa/vermelho e coração permaneçam visíveis
+- [x] Aplicar logo processada no site
+- [x] Testar logo sem nenhum fundo branco
