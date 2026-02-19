@@ -93,7 +93,7 @@ export default function Profile() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <img 
-              src="/logo.png" 
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/vWJVekJlFXWgBfIw.png" 
               alt="Farialover" 
               className="h-16 cursor-pointer" 
               onClick={() => setLocation("/")} 

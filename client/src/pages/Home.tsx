@@ -72,7 +72,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <img src="/logo.png" alt="Farialover" className="h-20" />
+              <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/vWJVekJlFXWgBfIw.png" alt="Farialover" className="h-20" />
             </div>
 
             {/* Navigation */}
