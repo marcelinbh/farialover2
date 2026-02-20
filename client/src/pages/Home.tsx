@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Share2, Star } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
+import ShareModal from "@/components/ShareModal";
 import SearchFilters, { FilterValues } from "@/components/SearchFilters";
 import { useLocation } from "wouter";
 
@@ -13,6 +14,8 @@ export default function Home() {
   const [storiesStart, setStoriesStart] = useState(0);
   const [storyModalOpen, setStoryModalOpen] = useState(false);
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedProfileForShare, setSelectedProfileForShare] = useState<{ name: string; id: number } | null>(null);
   const [, setLocation] = useLocation();
   const [filters, setFilters] = useState<FilterValues>({
     searchTerm: "",
@@ -518,6 +521,11 @@ export default function Home() {
                     </p>
                   </div>
                   <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedProfileForShare({ name: profile.name, id: profile.id });
+                      setShareModalOpen(true);
+                    }}
                     variant="outline"
                     size="sm"
                     className="w-full border-primary text-primary hover:bg-primary hover:text-black"
@@ -619,6 +627,19 @@ export default function Home() {
             setStoryModalOpen(false);
             setLocation(`/perfil/${displayProfiles[selectedStoryIndex].id}`);
           }}
+        />
+      )}
+
+      {/* Share Modal */}
+      {selectedProfileForShare && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={() => {
+            setShareModalOpen(false);
+            setSelectedProfileForShare(null);
+          }}
+          profileName={selectedProfileForShare.name}
+          profileUrl={`/perfil/${selectedProfileForShare.id}`}
         />
       )}
     </div>

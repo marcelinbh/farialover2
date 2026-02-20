@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Star, MapPin } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Star, MapPin, Share2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { toast } from "sonner";
+import ShareModal from "@/components/ShareModal";
 
 export default function Profile() {
   const [, params] = useRoute("/perfil/:id");
@@ -24,6 +25,7 @@ export default function Profile() {
   const [commentText, setCommentText] = useState("");
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const createCommentMutation = trpc.comments.create.useMutation({
     onSuccess: () => {
@@ -35,6 +37,15 @@ export default function Profile() {
       toast.error("Erro ao enviar comentário: " + error.message);
     },
   });
+
+  const incrementAccessMutation = trpc.profiles.incrementAccessCount.useMutation();
+
+  // Incrementar contador de acessos ao abrir perfil
+  useEffect(() => {
+    if (profileId) {
+      incrementAccessMutation.mutate({ profileId });
+    }
+  }, [profileId]);
 
   if (isLoading) {
     return (
@@ -171,6 +182,17 @@ export default function Profile() {
                 <div className="bg-green-900/30 border border-primary text-primary text-xs py-1 px-2 rounded mb-3">
                   Disponível
                 </div>
+
+                {/* Botão Compartilhar */}
+                <Button
+                  onClick={() => setShareModalOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-primary text-primary hover:bg-primary hover:text-white mb-3"
+                >
+                  <Share2 size={14} className="mr-2" />
+                  Compartilhar Perfil
+                </Button>
 
                 {/* Mensagem Destaque */}
                 <div className="bg-red-900/30 border border-red-600 text-red-500 text-xs py-2 px-2 rounded mb-4">
@@ -497,6 +519,14 @@ export default function Profile() {
           </div>
         </div>
       )}
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        profileName={profile.name}
+        profileUrl={`/perfil/${profile.id}`}
+      />
     </div>
   );
 }

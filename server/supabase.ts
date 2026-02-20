@@ -134,3 +134,128 @@ export async function createComment(
 
   return data;
 }
+
+export async function incrementProfileAccessCount(profileId: number): Promise<{ success: boolean }> {
+  // Primeiro, buscar o valor atual
+  const { data: profile, error: fetchError } = await supabase
+    .from('profiles')
+    .select('access_count')
+    .eq('id', profileId)
+    .single();
+
+  if (fetchError) {
+    console.error('Error fetching profile access count:', fetchError);
+    return { success: false };
+  }
+
+  const currentCount = profile?.access_count || 0;
+
+  // Atualizar com o novo valor
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ access_count: currentCount + 1 })
+    .eq('id', profileId);
+
+  if (updateError) {
+    console.error('Error incrementing profile access count:', updateError);
+    return { success: false };
+  }
+
+  return { success: true };
+}
+
+// Admin functions
+
+export async function getAllComments(): Promise<Comment[]> {
+  const { data: comments, error } = await supabase
+    .from('comments')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all comments:', error);
+    throw error;
+  }
+
+  return comments || [];
+}
+
+export async function approveComment(commentId: string): Promise<{ success: boolean }> {
+  const { error } = await supabase
+    .from('comments')
+    .update({ approved: true })
+    .eq('id', commentId);
+
+  if (error) {
+    console.error('Error approving comment:', error);
+    return { success: false };
+  }
+
+  return { success: true };
+}
+
+export async function deleteComment(commentId: string): Promise<{ success: boolean }> {
+  const { error } = await supabase
+    .from('comments')
+    .delete()
+    .eq('id', commentId);
+
+  if (error) {
+    console.error('Error deleting comment:', error);
+    return { success: false };
+  }
+
+  return { success: true };
+}
+
+export async function getAdminStats(): Promise<{
+  totalProfiles: number;
+  totalComments: number;
+  pendingComments: number;
+  totalViews: number;
+}> {
+  // Total de perfis
+  const { count: totalProfiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true });
+
+  if (profilesError) {
+    console.error('Error fetching profiles count:', profilesError);
+  }
+
+  // Total de comentários
+  const { count: totalComments, error: commentsError } = await supabase
+    .from('comments')
+    .select('*', { count: 'exact', head: true });
+
+  if (commentsError) {
+    console.error('Error fetching comments count:', commentsError);
+  }
+
+  // Comentários pendentes
+  const { count: pendingComments, error: pendingError } = await supabase
+    .from('comments')
+    .select('*', { count: 'exact', head: true })
+    .eq('approved', false);
+
+  if (pendingError) {
+    console.error('Error fetching pending comments count:', pendingError);
+  }
+
+  // Total de visualizações (soma de access_count)
+  const { data: profiles, error: viewsError } = await supabase
+    .from('profiles')
+    .select('access_count');
+
+  let totalViews = 0;
+  if (!viewsError && profiles) {
+    totalViews = profiles.reduce((sum, profile) => sum + (profile.access_count || 0), 0);
+  }
+
+  return {
+    totalProfiles: totalProfiles || 0,
+    totalComments: totalComments || 0,
+    pendingComments: pendingComments || 0,
+    totalViews,
+  };
+}

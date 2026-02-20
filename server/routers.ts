@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, router, adminProcedure } from "./_core/trpc";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -22,6 +22,17 @@ export const appRouter = router({
       const { getAllProfiles } = await import('./supabase');
       return getAllProfiles();
     }),
+    incrementAccessCount: publicProcedure
+      .input((val: unknown) => {
+        if (typeof val === 'object' && val !== null && 'profileId' in val && typeof (val as any).profileId === 'number') {
+          return val as { profileId: number };
+        }
+        throw new Error('Invalid input: profileId must be a number');
+      })
+      .mutation(async ({ input }) => {
+        const { incrementProfileAccessCount } = await import('./supabase');
+        return incrementProfileAccessCount(input.profileId);
+      }),
   }),
 
   comments: router({
@@ -35,6 +46,32 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const { getCommentsByProfile } = await import('./supabase');
         return getCommentsByProfile(input.profileId);
+      }),
+    listAll: adminProcedure.query(async () => {
+      const { getAllComments } = await import('./supabase');
+      return getAllComments();
+    }),
+    approve: adminProcedure
+      .input((val: unknown) => {
+        if (typeof val === 'object' && val !== null && 'commentId' in val && typeof (val as any).commentId === 'string') {
+          return val as { commentId: string };
+        }
+        throw new Error('Invalid input: commentId must be a string');
+      })
+      .mutation(async ({ input }) => {
+        const { approveComment } = await import('./supabase');
+        return approveComment(input.commentId);
+      }),
+    delete: adminProcedure
+      .input((val: unknown) => {
+        if (typeof val === 'object' && val !== null && 'commentId' in val && typeof (val as any).commentId === 'string') {
+          return val as { commentId: string };
+        }
+        throw new Error('Invalid input: commentId must be a string');
+      })
+      .mutation(async ({ input }) => {
+        const { deleteComment } = await import('./supabase');
+        return deleteComment(input.commentId);
       }),
     create: publicProcedure
       .input((val: unknown) => {
@@ -56,6 +93,13 @@ export const appRouter = router({
         const { createComment } = await import('./supabase');
         return createComment(input.profileId, input.authorName, input.commentText);
       }),
+  }),
+
+  admin: router({
+    stats: adminProcedure.query(async () => {
+      const { getAdminStats } = await import('./supabase');
+      return getAdminStats();
+    }),
   }),
 });
 
