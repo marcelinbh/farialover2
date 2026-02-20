@@ -139,54 +139,53 @@
 ## Funcionalidades Faltantes a Implementar
 
 ### Modal de Aviso +18
-- [ ] Criar modal de aviso de conteúdo adulto (idade +18)
-- [ ] Adicionar checkbox "Li e concordo com as declarações"
-- [ ] Adicionar checkbox "Lembrar minha escolha por 30 dias (cookie)"
-- [ ] Botões "Sair do site" e "Entrar no FARIALOVER"
-- [ ] Links para "Termos e condições" e "Privacidade"
-- [ ] Implementar lógica de cookie para lembrar escolha
+- [x] Criar modal de aviso de conteúdo adulto (idade +18)
+- [x] Adicionar checkbox "Li e concordo com as declarações"
+- [x] Adicionar checkbox "Lembrar minha escolha por 30 dias (cookie)"
+- [x] Botões "Sair do site" e "Entrar no FARIALOVER"
+- [x] Links para "Termos e condições" e "Privacidade"
+- [x] Implementar lógica de cookie para lembrar escolha
 
 ### Botão WhatsApp Flutuante
-- [ ] Criar botão verde fixo no canto inferior direito
-- [ ] Ícone do WhatsApp
-- [ ] Link para contato via WhatsApp
-- [ ] Animação de entrada/hover
+- [x] Criar botão verde fixo no canto inferior direito
+- [x] Ícone do WhatsApp
+- [x] Link para contato via WhatsApp
+- [x] Animação de entrada/hover
 
 ### Rodapé Completo
-- [ ] Links para seções do site (HOME, MODELOS, CIDADES)
-- [ ] Informações de contato
-- [ ] Links para termos de uso e privacidade
-- [ ] Copyright e informações legais
-- [ ] Redes sociais
+- [x] Links para seções do site (HOME, MODELOS, CIDADES)
+- [x] Informações de contato
+- [x] Links para termos de uso e privacidade
+- [x] Copyright e informações legais
+- [x] Redes sociais
 
 ### Sistema de Filtros e Busca
-- [ ] Barra de pesquisa no header
-- [ ] Filtro por cidade
-- [ ] Filtro por características físicas
-- [ ] Filtro por disponibilidade (novidade, últimos dias)
-- [ ] Aplicar filtros na listagem de perfis
-
-### Página MODELOS
-- [ ] Criar rota /modelos
-- [ ] Listagem completa de todos os perfis
-- [ ] Grid responsivo
-- [ ] Integração com filtros
-
-### Página CIDADES
-- [ ] Criar rota /cidades
-- [ ] Seletor de cidades disponíveis
-- [ ] Listagem de perfis por cidade selecionada
-
-### Seções Adicionais na Home
-- [ ] Seção "Vip's Belo Horizonte"
-- [ ] Seção "Novidades Belo Horizonte"
-- [ ] Seção "Massagistas Belo Horizonte"
-- [ ] Seção "Exclusivas Belo Horizonte"
+- [x] Barra de pesquisa no header
+- [x] Filtro por cidade
+- [x] Filtro por características físicas
+- [x] Filtro por disponibilidade (novidade, últimos dias)
+- [x] Aplicar filtros na listagem de perfis
 
 ### Indicadores do Carrossel
-- [ ] Dots/bullets abaixo do banner
-- [ ] Mostrar posição atual no carrossel
-- [ ] Clicáveis para navegar entre perfis
+- [x] Dots/bullets abaixo do banner
+- [x] Mostrar posição atual no carrossel
+- [x] Clicáveis para navegar entre perfis
+
+### Página MODELOS
+- [x] Criar rota /modelos
+- [x] Listagem completa de todos os perfis
+- [x] Grid responsivo
+- [x] Integração com filtros
+
+### Página CIDADES
+- [x] Criar rota /cidades
+- [x] Seletor de cidades disponíveis
+- [x] Listagem de perfis por cidade selecionada
+
+### Seções Adicionais na Home
+- [x] Seção "Novidades" (últimos perfis adicionados)
+- [x] Seção "Mais Visitadas" (perfis com mais acessos)
+- [x] Seção "Destaques da Semana" (perfis em destaque)
 
 ### SEO e Meta Tags
 - [ ] Meta tags otimizadas (title, description, keywords)

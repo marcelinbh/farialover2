@@ -353,9 +353,131 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Novidades Section */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl font-bold text-center mb-8 text-foreground">
+            NOVIDADES <span className="text-primary">BELO HORIZONTE</span>
+          </h3>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {displayProfiles.slice(0, 5).map((profile) => (
+              <Card
+                key={profile.id}
+                onClick={() => setLocation(`/perfil/${profile.id}`)}
+                className="bg-card border-2 border-primary hover:border-secondary transition-all duration-300 overflow-hidden cursor-pointer group hover:-translate-y-2"
+              >
+                <div className="relative aspect-[2/3]">
+                  <img
+                    src={profile.photos[0]?.url || ""}
+                    alt={profile.name}
+                    className="w-full h-full object-contain bg-black"
+                  />
+                  <div className="absolute top-2 left-2">
+                    <span className="bg-primary text-white px-2 py-1 text-xs font-bold">
+                      NOVO
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 text-center">
+                  <h4 className="font-bold text-foreground mb-1">{profile.name}</h4>
+                  <p className="text-sm text-muted-foreground flex items-center justify-center">
+                    <Phone size={14} className="mr-1" />
+                    {profile.phone}
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mais Visitadas Section */}
+      <section className="py-12 bg-black">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl font-bold text-center mb-8 text-foreground">
+            MAIS VISITADAS <span className="text-primary">BELO HORIZONTE</span>
+          </h3>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {displayProfiles.slice(0, 5).map((profile) => (
+              <Card
+                key={profile.id}
+                onClick={() => setLocation(`/perfil/${profile.id}`)}
+                className="bg-card border-2 border-secondary hover:border-primary transition-all duration-300 overflow-hidden cursor-pointer group hover:-translate-y-2"
+              >
+                <div className="relative aspect-[2/3]">
+                  <img
+                    src={profile.photos[0]?.url || ""}
+                    alt={profile.name}
+                    className="w-full h-full object-contain bg-black"
+                  />
+                  <div className="absolute top-2 left-2">
+                    <span className="bg-secondary text-white px-2 py-1 text-xs font-bold">
+                      TOP
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 text-center">
+                  <h4 className="font-bold text-foreground mb-1">{profile.name}</h4>
+                  <p className="text-sm text-muted-foreground flex items-center justify-center">
+                    <Phone size={14} className="mr-1" />
+                    {profile.phone}
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Destaques da Semana Section */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl font-bold text-center mb-8 text-foreground">
+            DESTAQUES DA SEMANA <span className="text-primary">BELO HORIZONTE</span>
+          </h3>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {displayProfiles.slice(0, 5).map((profile) => (
+              <Card
+                key={profile.id}
+                onClick={() => setLocation(`/perfil/${profile.id}`)}
+                className="bg-card border-2 border-primary hover:border-secondary transition-all duration-300 overflow-hidden cursor-pointer group hover:-translate-y-2"
+              >
+                <div className="relative aspect-[2/3]">
+                  <img
+                    src={profile.photos[0]?.url || ""}
+                    alt={profile.name}
+                    className="w-full h-full object-contain bg-black"
+                  />
+                  {profile.highlight_tag && (
+                    <div className="absolute top-2 left-2">
+                      <span className="bg-black text-primary border border-primary px-2 py-1 text-xs font-bold">
+                        {profile.highlight_tag}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 text-center">
+                  <h4 className="font-bold text-foreground mb-1">{profile.name}</h4>
+                  <p className="text-sm text-muted-foreground flex items-center justify-center">
+                    <Phone size={14} className="mr-1" />
+                    {profile.phone}
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Main Profiles Grid */}
       <section className="py-12 bg-black">
         <div className="container mx-auto px-4">
+          <h3 className="text-2xl font-bold text-center mb-8 text-foreground">
+            TODAS AS <span className="text-primary">MODELOS</span>
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayProfiles.map((profile) => (
               <Card

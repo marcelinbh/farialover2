@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import Modelos from "./pages/Modelos";
+import Cidades from "./pages/Cidades";
 import AgeVerificationModal from "./components/AgeVerificationModal";
 import WhatsAppButton from "./components/WhatsAppButton";
 
@@ -15,6 +17,8 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path="/perfil/:id" component={Profile} />
+      <Route path="/modelos" component={Modelos} />
+      <Route path="/cidades" component={Cidades} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
