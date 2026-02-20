@@ -75,12 +75,12 @@ export default function Modelos() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-black border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 lg:h-20">
             {/* Logo */}
             <div className="flex items-center">
               <a href="/">
-                <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/HlWSCrNFRUWDTqJt.png" alt="Farialover" className="h-16" />
+                <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/HlWSCrNFRUWDTqJt.png" alt="Farialover" className="h-10 sm:h-12 md:h-14 lg:h-16" />
               </a>
             </div>
 
@@ -94,41 +94,41 @@ export default function Modelos() {
             </nav>
 
             {/* Social + CTA */}
-            <div className="flex items-center space-x-4">
-              <a href="#" className="text-foreground hover:text-primary transition-colors">
-                <Facebook size={20} />
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+              <a href="#" className="text-foreground hover:text-primary transition-colors hidden sm:block">
+                <Facebook size={16} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
               </a>
-              <a href="#" className="text-foreground hover:text-primary transition-colors">
-                <Twitter size={20} />
+              <a href="#" className="text-foreground hover:text-primary transition-colors hidden sm:block">
+                <Twitter size={16} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
               </a>
-              <a href="#" className="text-foreground hover:text-primary transition-colors">
-                <Instagram size={20} />
+              <a href="#" className="text-foreground hover:text-primary transition-colors hidden sm:block">
+                <Instagram size={16} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
               </a>
-              <Button className="bg-red-600 hover:bg-red-700 text-white font-bold px-6">
-                ANUNCIE AQUI
+              <Button className="bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] sm:text-xs md:text-sm px-2 sm:px-4 md:px-6 py-1 sm:py-2">
+                ANUNCIE
               </Button>
             </div>
           </div>
           
           {/* Search Bar */}
-          <div className="flex items-center justify-center pb-4">
+          <div className="flex items-center justify-center pb-2 sm:pb-3 md:pb-4">
             <SearchFilters onSearch={handleSearch} />
           </div>
         </div>
       </header>
 
       {/* Page Title */}
-      <section className="py-12 bg-black">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center mb-4 text-foreground">
+      <section className="py-6 sm:py-8 md:py-12 bg-black">
+        <div className="container mx-auto px-2 sm:px-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 sm:mb-4 text-foreground">
             TODAS AS <span className="text-primary">MODELOS</span>
           </h1>
-          <p className="text-center text-muted-foreground mb-8">
+          <p className="text-center text-muted-foreground text-sm sm:text-base mb-4 sm:mb-6 md:mb-8">
             {displayProfiles.length} {displayProfiles.length === 1 ? 'modelo encontrada' : 'modelos encontradas'}
           </p>
 
           {/* Profiles Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {displayProfiles.map((profile) => (
               <Card
                 key={profile.id}
@@ -155,9 +155,9 @@ export default function Modelos() {
                   </div>
                 </div>
 
-                <div className="p-4">
-                  <h4 className="text-xl font-bold text-foreground mb-2">{profile.name}</h4>
-                  <div className="text-sm text-muted-foreground space-y-1 mb-3">
+                <div className="p-3 sm:p-4">
+                  <h4 className="text-lg sm:text-xl font-bold text-foreground mb-2">{profile.name}</h4>
+                  <div className="text-xs sm:text-sm text-muted-foreground space-y-1 mb-3">
                     <p>{profile.age} anos</p>
                     <p>{profile.height} m, {profile.weight} kg</p>
                     <p>{profile.city}</p>

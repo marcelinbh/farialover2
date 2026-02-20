@@ -223,3 +223,29 @@
 - [x] Adicionar sistema de autenticação admin
 - [x] Implementar procedures tRPC protegidas (adminProcedure)
 - [ ] Criar página de gerenciamento de perfis (CRUD) - Opcional
+
+## Otimização Mobile
+
+### Home.tsx
+- [x] Otimizar header para mobile (menu hamburguer, logo menor)
+- [x] Ajustar hero banner para telas pequenas
+- [x] Tornar cards de perfis responsivos (1 coluna em mobile)
+- [x] Ajustar seções VIP, Novidades, Mais Visitadas para mobile
+- [x] Otimizar footer para mobile (colunas empilhadas)
+- [x] Ajustar espaçamentos e tamanhos de fonte
+
+### Profile.tsx
+- [x] Converter layout de 2 colunas para 1 coluna em mobile
+- [x] Ajustar galeria de fotos para mobile (swipe horizontal)
+- [x] Otimizar sidebar para mobile
+- [x] Ajustar formulário de comentários para mobile
+- [x] Tornar botões e textos responsíveisara toque em telas pequenas
+### Páginas Modelos, Cidades e Admin
+- [x] Otimizar grid de perfis em Modelos para mobile
+- [x] Ajustar seletor de cidades para mobile
+- [ ] Otimizar painel Admin para mobile (se aplicável)ados)
+- [ ] Ajustar tabela de comentári### Componentes
+- [x] Otimizar SearchFilters para mobile (drawer/sheet)
+- [x] Otimizar ShareModal para mobile
+- [x] Ajustar modais (AgeVerificationModal, StoryModal) para mobile] Ajustar WhatsAppButton posição para mobile
+- [ ] Melhorar indicadores de carrossel para toque

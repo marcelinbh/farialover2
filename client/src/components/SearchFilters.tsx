@@ -123,22 +123,22 @@ export default function SearchFilters({ onSearch }: SearchFiltersProps) {
   ].filter(Boolean).length;
 
   return (
-    <div className="flex items-center gap-2 w-full max-w-2xl">
+    <div className="flex items-center gap-1.5 sm:gap-2 w-full max-w-2xl">
       {/* Search Input */}
       <div className="relative flex-1">
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          size={20}
+          className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          size={16}
         />
         <Input
           type="text"
-          placeholder="Buscar por nome..."
+          placeholder="Buscar..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSearch();
           }}
-          className="pl-10 bg-black/50 border-border text-white placeholder:text-muted-foreground"
+          className="pl-8 sm:pl-10 pr-2 sm:pr-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-black/50 border-border text-white placeholder:text-muted-foreground"
         />
       </div>
 
@@ -147,26 +147,26 @@ export default function SearchFilters({ onSearch }: SearchFiltersProps) {
         <SheetTrigger asChild>
           <Button
             variant="outline"
-            className="relative border-border bg-black/50 hover:bg-black/70"
+            className="relative border-border bg-black/50 hover:bg-black/70 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
           >
-            <SlidersHorizontal size={20} className="mr-2" />
-            Filtros
+            <SlidersHorizontal size={16} className="sm:w-5 sm:h-5 sm:mr-2" />
+            <span className="hidden sm:inline">Filtros</span>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-primary text-white text-[10px] sm:text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             )}
           </Button>
         </SheetTrigger>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto bg-black border-border">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto bg-black border-border p-4 sm:p-6">
           <SheetHeader>
-            <SheetTitle className="text-white">Filtros Avançados</SheetTitle>
+            <SheetTitle className="text-white text-base sm:text-lg">Filtros Avançados</SheetTitle>
           </SheetHeader>
 
-          <div className="space-y-6 mt-6">
+          <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
             {/* City Filter */}
-            <div className="space-y-2">
-              <Label className="text-white">Cidade</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-white text-xs sm:text-sm">Cidade</Label>
               <Select value={city} onValueChange={setCity}>
                 <SelectTrigger className="bg-black/50 border-border text-white">
                   <SelectValue />
@@ -182,8 +182,8 @@ export default function SearchFilters({ onSearch }: SearchFiltersProps) {
             </div>
 
             {/* Age Range */}
-            <div className="space-y-2">
-              <Label className="text-white">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-white text-xs sm:text-sm">
                 Idade: {ageRange[0]} - {ageRange[1]} anos
               </Label>
               <Slider

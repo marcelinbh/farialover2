@@ -53,51 +53,51 @@ export default function ShareModal({ isOpen, onClose, profileName, profileUrl }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-card border-border max-w-md">
+      <DialogContent className="bg-card border-border max-w-md w-[calc(100%-2rem)] sm:w-full">
         <DialogHeader>
-          <DialogTitle className="text-foreground text-xl font-bold">
+          <DialogTitle className="text-foreground text-lg sm:text-xl font-bold">
             Compartilhar Perfil
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
           {/* Web Share API (mobile) */}
           {typeof navigator !== 'undefined' && 'share' in navigator && (
             <Button
               onClick={handleWebShare}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-sm sm:text-base py-2 sm:py-2.5"
             >
-              <Share2 className="mr-2" size={20} />
+              <Share2 className="mr-2" size={18} />
               Compartilhar
             </Button>
           )}
 
           {/* Social Media Buttons */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <Button
               onClick={() => window.open(shareUrls.facebook, '_blank', 'width=600,height=400')}
-              className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white"
+              className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white py-2 sm:py-2.5"
             >
-              <Facebook size={20} />
+              <Facebook size={18} className="sm:w-5 sm:h-5" />
             </Button>
 
             <Button
               onClick={() => window.open(shareUrls.twitter, '_blank', 'width=600,height=400')}
-              className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 text-white"
+              className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 text-white py-2 sm:py-2.5"
             >
-              <Twitter size={20} />
+              <Twitter size={18} className="sm:w-5 sm:h-5" />
             </Button>
 
             <Button
               onClick={() => window.open(shareUrls.whatsapp, '_blank')}
-              className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+              className="bg-[#25D366] hover:bg-[#25D366]/90 text-white py-2 sm:py-2.5"
             >
-              <MessageCircle size={20} />
+              <MessageCircle size={18} className="sm:w-5 sm:h-5" />
             </Button>
           </div>
 
           {/* Copy Link */}
-          <div className="border border-border rounded-lg p-3">
+          <div className="border border-border rounded-lg p-2 sm:p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-muted-foreground font-medium">Link do Perfil</span>
               <Button
