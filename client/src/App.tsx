@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import AgeVerificationModal from "./components/AgeVerificationModal";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -33,6 +35,8 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <AgeVerificationModal />
+          <WhatsAppButton />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

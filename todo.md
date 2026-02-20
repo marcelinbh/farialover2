@@ -135,3 +135,61 @@
 - [x] Garantir que apenas texto rosa/vermelho e coração permaneçam visíveis
 - [x] Aplicar logo processada no site
 - [x] Testar logo sem nenhum fundo branco
+
+## Funcionalidades Faltantes a Implementar
+
+### Modal de Aviso +18
+- [ ] Criar modal de aviso de conteúdo adulto (idade +18)
+- [ ] Adicionar checkbox "Li e concordo com as declarações"
+- [ ] Adicionar checkbox "Lembrar minha escolha por 30 dias (cookie)"
+- [ ] Botões "Sair do site" e "Entrar no FARIALOVER"
+- [ ] Links para "Termos e condições" e "Privacidade"
+- [ ] Implementar lógica de cookie para lembrar escolha
+
+### Botão WhatsApp Flutuante
+- [ ] Criar botão verde fixo no canto inferior direito
+- [ ] Ícone do WhatsApp
+- [ ] Link para contato via WhatsApp
+- [ ] Animação de entrada/hover
+
+### Rodapé Completo
+- [ ] Links para seções do site (HOME, MODELOS, CIDADES)
+- [ ] Informações de contato
+- [ ] Links para termos de uso e privacidade
+- [ ] Copyright e informações legais
+- [ ] Redes sociais
+
+### Sistema de Filtros e Busca
+- [ ] Barra de pesquisa no header
+- [ ] Filtro por cidade
+- [ ] Filtro por características físicas
+- [ ] Filtro por disponibilidade (novidade, últimos dias)
+- [ ] Aplicar filtros na listagem de perfis
+
+### Página MODELOS
+- [ ] Criar rota /modelos
+- [ ] Listagem completa de todos os perfis
+- [ ] Grid responsivo
+- [ ] Integração com filtros
+
+### Página CIDADES
+- [ ] Criar rota /cidades
+- [ ] Seletor de cidades disponíveis
+- [ ] Listagem de perfis por cidade selecionada
+
+### Seções Adicionais na Home
+- [ ] Seção "Vip's Belo Horizonte"
+- [ ] Seção "Novidades Belo Horizonte"
+- [ ] Seção "Massagistas Belo Horizonte"
+- [ ] Seção "Exclusivas Belo Horizonte"
+
+### Indicadores do Carrossel
+- [ ] Dots/bullets abaixo do banner
+- [ ] Mostrar posição atual no carrossel
+- [ ] Clicáveis para navegar entre perfis
+
+### SEO e Meta Tags
+- [ ] Meta tags otimizadas (title, description, keywords)
+- [ ] Open Graph tags para compartilhamento social
+- [ ] Schema.org markup
+- [ ] Sitemap XML

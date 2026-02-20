@@ -2,13 +2,28 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Phone, Share2, Star } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
+import SearchFilters, { FilterValues } from "@/components/SearchFilters";
 import { useLocation } from "wouter";
 
 export default function Home() {
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
   const [heroIndex, setHeroIndex] = useState(0);
+  const [storiesStart, setStoriesStart] = useState(0);
+  const [storyModalOpen, setStoryModalOpen] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [, setLocation] = useLocation();
+  const [filters, setFilters] = useState<FilterValues>({
+    searchTerm: "",
+    city: "",
+    ageMin: 18,
+    ageMax: 50,
+    bodyType: "",
+    services: [],
+    priceMin: 0,
+    priceMax: 5000,
+  });
 
   // Auto-advance carousel every 5 seconds
   useEffect(() => {
@@ -18,10 +33,42 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(interval);
   }, [profiles]);
-  const [storiesStart, setStoriesStart] = useState(0);
-  const [storyModalOpen, setStoryModalOpen] = useState(false);
-  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
-  const [, setLocation] = useLocation();
+
+  // Reset heroIndex when filters change
+  useEffect(() => {
+    setHeroIndex(0);
+  }, [filters]);
+
+  // Filter profiles based on search criteria
+  const filteredProfiles = useMemo(() => {
+    if (!profiles) return [];
+    
+    return profiles.filter((profile) => {
+      // Search term filter
+      if (filters.searchTerm && !profile.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      // City filter
+      if (filters.city && profile.city !== filters.city) {
+        return false;
+      }
+      
+      // Age filter
+      if (profile.age < filters.ageMin || profile.age > filters.ageMax) {
+        return false;
+      }
+      
+      // Body type filter
+      if (filters.bodyType && profile.body_type !== filters.bodyType) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [profiles, filters]);
+
+  const displayProfiles = filteredProfiles.length > 0 ? filteredProfiles : profiles || [];
 
   if (isLoading) {
     return (
@@ -39,21 +86,21 @@ export default function Home() {
     );
   }
 
-  const heroProfile = profiles[heroIndex];
+  const heroProfile = displayProfiles[heroIndex % displayProfiles.length];
   const heroPhoto = heroProfile?.photos[0]?.url || "";
   const storiesPerPage = 12;
-  const visibleStories = profiles.slice(storiesStart, storiesStart + storiesPerPage);
+  const visibleStories = displayProfiles.slice(storiesStart, storiesStart + storiesPerPage);
 
   const nextHero = () => {
-    setHeroIndex((prev) => (prev + 1) % profiles.length);
+    setHeroIndex((prev) => (prev + 1) % displayProfiles.length);
   };
 
   const prevHero = () => {
-    setHeroIndex((prev) => (prev - 1 + profiles.length) % profiles.length);
+    setHeroIndex((prev) => (prev - 1 + displayProfiles.length) % displayProfiles.length);
   };
 
   const nextStories = () => {
-    if (storiesStart + storiesPerPage < profiles.length) {
+    if (storiesStart + storiesPerPage < displayProfiles.length) {
       setStoriesStart(storiesStart + storiesPerPage);
     }
   };
@@ -62,6 +109,12 @@ export default function Home() {
     if (storiesStart > 0) {
       setStoriesStart(Math.max(0, storiesStart - storiesPerPage));
     }
+  };
+
+  const handleSearch = (newFilters: FilterValues) => {
+    setFilters(newFilters);
+    setHeroIndex(0);
+    setStoriesStart(0);
   };
 
   return (
@@ -99,6 +152,11 @@ export default function Home() {
                 ANUNCIE AQUI
               </Button>
             </div>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="flex items-center justify-center pb-4">
+            <SearchFilters onSearch={handleSearch} />
           </div>
         </div>
       </header>
@@ -181,6 +239,25 @@ export default function Home() {
         >
           <ChevronRight size={28} />
         </button>
+
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 pointer-events-auto">
+          {profiles.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+                setHeroIndex(index);
+              }}
+              className={`transition-all ${
+                index === heroIndex
+                  ? 'w-8 h-2 bg-primary'
+                  : 'w-2 h-2 bg-white/50 hover:bg-white/75'
+              } rounded-full`}
+              aria-label={`Ir para perfil ${index + 1}`}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Stories Section */}
@@ -196,7 +273,7 @@ export default function Home() {
                 <div
                   key={profile.id}
                   onClick={() => {
-                    const index = profiles.findIndex(p => p.id === profile.id);
+                    const index = displayProfiles.findIndex(p => p.id === profile.id);
                     setSelectedStoryIndex(index);
                     setStoryModalOpen(true);
                   }}
@@ -223,7 +300,7 @@ export default function Home() {
                 <ChevronLeft size={24} />
               </button>
             )}
-            {storiesStart + storiesPerPage < profiles.length && (
+            {storiesStart + storiesPerPage < displayProfiles.length && (
               <button
                 onClick={nextStories}
                 className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white p-2 rounded-full"
@@ -243,7 +320,7 @@ export default function Home() {
           </h3>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {profiles.map((profile) => (
+            {displayProfiles.map((profile) => (
               <Card
                 key={profile.id}
                 onClick={() => window.location.href = `/perfil/${profile.id}`}
@@ -280,7 +357,7 @@ export default function Home() {
       <section className="py-12 bg-black">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {profiles.map((profile) => (
+            {displayProfiles.map((profile) => (
               <Card
                 key={profile.id}
                 onClick={() => window.location.href = `/perfil/${profile.id}`}
@@ -334,28 +411,91 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground">
-            © 2026 <span className="text-primary">Farialover</span>. Todos os direitos reservados.
-          </p>
+      <footer className="bg-black border-t border-border py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Logo e Descrição */}
+            <div className="col-span-1 md:col-span-1">
+              <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029969419/HlWSCrNFRUWDTqJt.png" alt="Farialover" className="h-16 mb-4" />
+              <p className="text-muted-foreground text-sm">
+                A plataforma mais elegante de acompanhantes de luxo do Brasil.
+              </p>
+            </div>
+
+            {/* Links Rápidos */}
+            <div>
+              <h4 className="text-white font-bold mb-4">Links Rápidos</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/" className="text-muted-foreground hover:text-primary transition-colors">Home</a></li>
+                <li><a href="#modelos" className="text-muted-foreground hover:text-primary transition-colors">Modelos</a></li>
+                <li><a href="#cidades" className="text-muted-foreground hover:text-primary transition-colors">Cidades</a></li>
+                <li><a href="#videos" className="text-muted-foreground hover:text-primary transition-colors">Vídeos</a></li>
+              </ul>
+            </div>
+
+            {/* Informações Legais */}
+            <div>
+              <h4 className="text-white font-bold mb-4">Informações Legais</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/termos" className="text-muted-foreground hover:text-primary transition-colors">Termos de Uso</a></li>
+                <li><a href="/privacidade" className="text-muted-foreground hover:text-primary transition-colors">Política de Privacidade</a></li>
+                <li><a href="/contato" className="text-muted-foreground hover:text-primary transition-colors">Contato</a></li>
+                <li><a href="/anuncie" className="text-muted-foreground hover:text-primary transition-colors">Anuncie Aqui</a></li>
+              </ul>
+            </div>
+
+            {/* Redes Sociais */}
+            <div>
+              <h4 className="text-white font-bold mb-4">Redes Sociais</h4>
+              <div className="flex space-x-4">
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Facebook size={24} />
+                </a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Twitter size={24} />
+                </a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Instagram size={24} />
+                </a>
+              </div>
+              <p className="text-muted-foreground text-sm mt-4">
+                Siga-nos nas redes sociais para novidades e atualizações.
+              </p>
+            </div>
+          </div>
+
+          {/* Aviso Legal */}
+          <div className="border-t border-border pt-6 mb-6">
+            <p className="text-muted-foreground text-xs text-center max-w-4xl mx-auto">
+              <strong className="text-red-500">AVISO LEGAL:</strong> Este site contém conteúdo adulto e é destinado exclusivamente a maiores de 18 anos. 
+              Todos os anúncios são de responsabilidade dos anunciantes. O Farialover não se responsabiliza pelo conteúdo dos anúncios publicados. 
+              As imagens e informações são fornecidas pelos próprios anunciantes. Ao acessar este site, você declara ter mais de 18 anos e concorda com nossos Termos de Uso.
+            </p>
+          </div>
+
+          {/* Copyright */}
+          <div className="text-center">
+            <p className="text-muted-foreground text-sm">
+              © 2026 <span className="text-primary font-bold">Farialover</span>. Todos os direitos reservados.
+            </p>
+          </div>
         </div>
       </footer>
 
       {/* Story Modal */}
-      {storyModalOpen && profiles && profiles.length > 0 && (
+      {storyModalOpen && displayProfiles && displayProfiles.length > 0 && (
         <StoryModal
-          profile={profiles[selectedStoryIndex]}
+          profile={displayProfiles[selectedStoryIndex]}
           onClose={() => setStoryModalOpen(false)}
           onPrevious={() => {
-            setSelectedStoryIndex((prev) => (prev - 1 + profiles.length) % profiles.length);
+            setSelectedStoryIndex((prev) => (prev - 1 + displayProfiles.length) % displayProfiles.length);
           }}
           onNext={() => {
-            setSelectedStoryIndex((prev) => (prev + 1) % profiles.length);
+            setSelectedStoryIndex((prev) => (prev + 1) % displayProfiles.length);
           }}
           onViewProfile={() => {
             setStoryModalOpen(false);
-            setLocation(`/perfil/${profiles[selectedStoryIndex].id}`);
+            setLocation(`/perfil/${displayProfiles[selectedStoryIndex].id}`);
           }}
         />
       )}
