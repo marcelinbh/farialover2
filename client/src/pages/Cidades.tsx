@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Facebook, Twitter, Instagram, Phone, Share2, Star, MapPin } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function Cidades() {
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
@@ -65,9 +65,9 @@ export default function Cidades() {
 
             {/* Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
-              <a href="/" className="text-foreground hover:text-primary transition-colors font-medium">HOME</a>
-              <a href="/modelos" className="text-foreground hover:text-primary transition-colors font-medium">MODELOS</a>
-              <a href="/cidades" className="text-primary transition-colors font-medium">CIDADES</a>
+              <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">HOME</Link>
+              <Link href="/modelos" className="text-foreground hover:text-primary transition-colors font-medium">MODELOS</Link>
+              <Link href="/cidades" className="text-primary transition-colors font-medium">CIDADES</Link>
               <a href="#videos" className="text-foreground hover:text-primary transition-colors font-medium">VÍDEOS</a>
               <a href="#audios" className="text-foreground hover:text-primary transition-colors font-medium">ÁUDIOS</a>
             </nav>
@@ -210,9 +210,9 @@ export default function Cidades() {
             <div>
               <h4 className="text-white font-bold mb-4">Links Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="/" className="text-muted-foreground hover:text-primary transition-colors">Home</a></li>
-                <li><a href="/modelos" className="text-muted-foreground hover:text-primary transition-colors">Modelos</a></li>
-                <li><a href="/cidades" className="text-muted-foreground hover:text-primary transition-colors">Cidades</a></li>
+                <li><Link href="/" className="text-muted-foreground hover:text-primary transition-colors">Home</Link></li>
+                <li><Link href="/modelos" className="text-muted-foreground hover:text-primary transition-colors">Modelos</Link></li>
+                <li><Link href="/cidades" className="text-muted-foreground hover:text-primary transition-colors">Cidades</Link></li>
                 <li><a href="#videos" className="text-muted-foreground hover:text-primary transition-colors">Vídeos</a></li>
               </ul>
             </div>

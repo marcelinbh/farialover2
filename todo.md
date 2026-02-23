@@ -255,3 +255,16 @@
 ### Erro de Acessibilidade Dialog
 - [x] Adicionar DialogTitle ao modal de verificação de idade
 - [x] Garantir que todos os Dialogs tenham DialogTitle para acessibilidade
+
+
+## Correções de Bugs Críticos Encontrados nos Testes
+
+### BUG #1: Modal +18 reaparece em cada navegação
+- [x] Verificar lógica de cookie no AgeVerificationModal.tsx
+- [x] Garantir que cookie seja lido corretamente em todas as páginas
+- [x] Testar navegação entre páginas sem reaparecimento do modal
+
+### BUG #2: Links do menu não navegam corretamente
+- [x] Corrigir links no header (HOME, MODELOS, CIDADES, VÍDEOS, ÁUDIOS)
+- [x] Usar componente Link do wouter ao invés de <a> com href
+- [x] Testar navegação entre todas as páginas

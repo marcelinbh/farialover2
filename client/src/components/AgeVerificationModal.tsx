@@ -30,6 +30,9 @@ export default function AgeVerificationModal() {
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + 30);
       document.cookie = `${AGE_VERIFICATION_COOKIE}=true; expires=${expiryDate.toUTCString()}; path=/`;
+    } else {
+      // Set session cookie (expires when browser closes)
+      document.cookie = `${AGE_VERIFICATION_COOKIE}=true; path=/`;
     }
 
     setIsOpen(false);

@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
 import ShareModal from "@/components/ShareModal";
 import SearchFilters, { FilterValues } from "@/components/SearchFilters";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function Home() {
   const { data: profiles, isLoading } = trpc.profiles.list.useQuery();
@@ -138,9 +138,9 @@ export default function Home() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
-              <a href="/" className="text-foreground hover:text-primary transition-colors font-medium">HOME</a>
-              <a href="/modelos" className="text-foreground hover:text-primary transition-colors font-medium">MODELOS</a>
-              <a href="/cidades" className="text-foreground hover:text-primary transition-colors font-medium">CIDADES</a>
+              <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">HOME</Link>
+              <Link href="/modelos" className="text-foreground hover:text-primary transition-colors font-medium">MODELOS</Link>
+              <Link href="/cidades" className="text-foreground hover:text-primary transition-colors font-medium">CIDADES</Link>
             </nav>
 
             {/* Desktop Social + CTA */}
@@ -171,27 +171,27 @@ export default function Home() {
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="lg:hidden py-4 space-y-4 border-t border-border">
-              <a 
+              <Link 
                 href="/" 
                 className="block text-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 HOME
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/modelos" 
                 className="block text-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 MODELOS
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/cidades" 
                 className="block text-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 CIDADES
-              </a>
+              </Link>
               <div className="flex items-center space-x-4 pt-2">
                 <a href="#" className="text-foreground hover:text-primary transition-colors">
                   <Facebook size={20} />
