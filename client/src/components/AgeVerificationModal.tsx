@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const AGE_VERIFICATION_COOKIE = "farialover_age_verified";
 
@@ -44,6 +45,9 @@ export default function AgeVerificationModal() {
         className="max-w-2xl bg-black/95 border-2 border-primary text-white"
         showCloseButton={false}
       >
+        <VisuallyHidden>
+          <DialogTitle>Verificação de Idade</DialogTitle>
+        </VisuallyHidden>
         <div className="space-y-6 p-6">
           {/* Header */}
           <div className="flex items-center gap-4">

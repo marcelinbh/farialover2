@@ -249,3 +249,9 @@
 - [x] Otimizar ShareModal para mobile
 - [x] Ajustar modais (AgeVerificationModal, StoryModal) para mobile] Ajustar WhatsAppButton posição para mobile
 - [ ] Melhorar indicadores de carrossel para toque
+
+## Correções de Bugs
+
+### Erro de Acessibilidade Dialog
+- [x] Adicionar DialogTitle ao modal de verificação de idade
+- [x] Garantir que todos os Dialogs tenham DialogTitle para acessibilidade
