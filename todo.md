@@ -268,3 +268,22 @@
 - [x] Corrigir links no header (HOME, MODELOS, CIDADES, VÍDEOS, ÁUDIOS)
 - [x] Usar componente Link do wouter ao invés de <a> com href
 - [x] Testar navegação entre todas as páginas
+
+
+## Novas Funcionalidades Solicitadas
+
+### Páginas VÍDEOS e ÁUDIOS
+- [x] Criar página /videos com grid de vídeos
+- [x] Implementar player de vídeo integrado
+- [x] Adicionar filtros por categoria de vídeos
+- [x] Criar página /audios com lista de áudios
+- [x] Implementar player de áudio integrado
+- [x] Adicionar filtros por categoria de áudios
+- [x] Adicionar rotas no App.tsx
+- [x] Corrigir links VÍDEOS e ÁUDIOS no header
+
+### Filtros Avançados por Serviços
+- [x] Adicionar campo de serviços no SearchFilters
+- [x] Criar lista de serviços disponíveis (massagem, acompanhamento, etc.)
+- [x] Implementar lógica de filtro por serviços
+- [x] Testar filtros em todas as páginas
