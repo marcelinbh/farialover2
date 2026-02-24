@@ -8,8 +8,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Modelos from "./pages/Modelos";
 import Cidades from "./pages/Cidades";
-import Videos from "./pages/Videos";
-import Audios from "./pages/Audios";
+
 import Admin from "./pages/Admin";
 import AgeVerificationModal from "./components/AgeVerificationModal";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -22,8 +21,7 @@ function Router() {
       <Route path="/perfil/:id" component={Profile} />
       <Route path="/modelos" component={Modelos} />
       <Route path="/cidades" component={Cidades} />
-      <Route path="/videos" component={Videos} />
-      <Route path="/audios" component={Audios} />
+
       <Route path="/admin" component={Admin} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

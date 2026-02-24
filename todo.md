@@ -287,3 +287,31 @@
 - [x] Criar lista de serviços disponíveis (massagem, acompanhamento, etc.)
 - [x] Implementar lógica de filtro por serviços
 - [x] Testar filtros em todas as páginas
+
+
+## Implementação de Vídeos e Áudios no Perfil da Modelo
+
+### Schema do Banco de Dados
+- [x] Criar tabela `profile_videos` (id, profile_id, title, url, category, created_at) - Já existe como campo JSONB
+- [x] Criar tabela `profile_audios` (id, profile_id, title, url, duration, category, created_at)
+- [x] Executar migração do banco de dados
+
+### Página de Perfil Individual
+- [x] Adicionar seção "Vídeos" na página de perfil
+- [x] Adicionar seção "Áudios" na página de perfil
+- [x] Implementar player de vídeo integrado
+- [x] Implementar player de áudio integrado
+- [x] Grid responsivo para vídeos
+- [x] Lista responsiva para áudios
+
+### Painel Admin
+- [ ] Criar interface de upload de vídeos
+- [ ] Criar interface de upload de áudios
+- [ ] Integrar com S3 para armazenamento
+- [ ] Adicionar validação de formatos (mp4, webm para vídeo / mp3, wav para áudio)
+- [ ] Permitir edição e exclusão de mídias
+
+### Limpeza
+- [ ] Remover links VÍDEOS e ÁUDIOS do menu principal
+- [ ] Remover rotas /videos e /audios do App.tsx
+- [ ] Remover arquivos Videos.tsx e Audios.tsx

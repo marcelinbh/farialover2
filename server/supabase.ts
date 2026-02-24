@@ -48,6 +48,16 @@ export type Video = {
   title: string;
 };
 
+export type Audio = {
+  id: number;
+  profile_id: number;
+  title: string;
+  url: string;
+  duration: number | null;
+  category: string | null;
+  created_at: string;
+};
+
 export type Comment = {
   id: string;
   profile_id: number;
@@ -60,6 +70,7 @@ export type Comment = {
 export type ProfileWithPhotos = Profile & {
   photos: Photo[];
   videos?: Video[];
+  audios?: Audio[];
 };
 
 export async function getAllProfiles(): Promise<ProfileWithPhotos[]> {
@@ -206,6 +217,21 @@ export async function deleteComment(commentId: string): Promise<{ success: boole
   }
 
   return { success: true };
+}
+
+export async function getAudiosByProfile(profileId: number): Promise<Audio[]> {
+  const { data: audios, error } = await supabase
+    .from('profile_audios')
+    .select('*')
+    .eq('profile_id', profileId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching audios:', error);
+    throw error;
+  }
+
+  return audios || [];
 }
 
 export async function getAdminStats(): Promise<{

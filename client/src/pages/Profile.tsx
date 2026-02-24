@@ -25,6 +25,7 @@ export default function Profile() {
   const [commentText, setCommentText] = useState("");
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [showAudioModal, setShowAudioModal] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const createCommentMutation = trpc.comments.create.useMutation({
@@ -331,17 +332,25 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Botão VÍDEOS */}
-            {profile.videos && profile.videos.length > 0 && (
-              <div className="mb-3 sm:mb-4 md:mb-6">
+            {/* Botões VÍDEOS e ÁUDIOS */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+              {profile.videos && profile.videos.length > 0 && (
                 <Button
                   onClick={() => setShowVideoModal(true)}
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm"
+                  className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm"
                 >
-                  VÍDEOS
+                  VÍDEOS ({profile.videos.length})
                 </Button>
-              </div>
-            )}
+              )}
+              {profile.audios && profile.audios.length > 0 && (
+                <Button
+                  onClick={() => setShowAudioModal(true)}
+                  className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm"
+                >
+                  ÁUDIOS ({profile.audios.length})
+                </Button>
+              )}
+            </div>
 
             {/* MEU CACHÊ */}
             {profile.price_per_hour && (
@@ -516,6 +525,52 @@ export default function Profile() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Áudios */}
+      {showAudioModal && profile.audios && profile.audios.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowAudioModal(false)}
+        >
+          <div
+            className="bg-gray-900 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-bold text-lg">ÁUDIOS - {profile.name}</h3>
+              <button
+                onClick={() => setShowAudioModal(false)}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-3">
+              {profile.audios.map((audio) => (
+                <div key={audio.id} className="bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-white font-semibold text-sm">{audio.title}</h4>
+                    {audio.category && (
+                      <span className="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">
+                        {audio.category}
+                      </span>
+                    )}
+                  </div>
+                  <audio controls className="w-full">
+                    <source src={audio.url} type="audio/mpeg" />
+                    Seu navegador não suporta o elemento de áudio.
+                  </audio>
+                  {audio.duration && (
+                    <div className="text-xs text-gray-400 mt-2">
+                      Duração: {Math.floor(audio.duration / 60)}:{(audio.duration % 60).toString().padStart(2, '0')}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
